@@ -43,6 +43,7 @@
                TextColor="Black"
                PlaceholderColor="#999"
                Keyboard="Text" />
+        
 
         <!-- Botón Ingresar -->
         <Button Text="Ingresar"
@@ -54,6 +55,16 @@
                 FontAttributes="Bold"
                 CornerRadius="12"
                 Clicked="OnLoginClicked" />
+        
+        <Button Text="Registrarse"
+                Grid.Row="3"
+                Margin="0,30,0,0"
+                HeightRequest="50"
+                BackgroundColor="#7F4A9B"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="12"
+                Clicked="Registrarse" />
 
         <!-- Versión / Footer -->
         <Label Text="versión 1.0.0"

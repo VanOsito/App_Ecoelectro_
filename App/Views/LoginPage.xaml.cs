@@ -1,11 +1,13 @@
+using Microsoft.Maui.Controls;
+using System;
 namespace App.Views;
 
 public partial class LoginPage : ContentPage
 {
-	public LoginPage()
-	{
-		InitializeComponent();
-	}
+    public LoginPage()
+    {
+        InitializeComponent();
+    }
     private async void OnLoginClicked(object sender, EventArgs e)
     {
         string usuario = txtUsuario.Text;
@@ -31,5 +33,8 @@ public partial class LoginPage : ContentPage
 
     }
 
-
+    private async void Registrarse(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new Registrarse());
+    }
 }
