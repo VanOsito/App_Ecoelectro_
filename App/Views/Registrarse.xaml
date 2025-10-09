@@ -90,7 +90,7 @@
                        TextColor="Green"
                        FontAttributes="Bold">
                     <Label.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding IniciarSesionCommand}" />
+                        <TapGestureRecognizer Tapped="OnLoginTapped" />
                     </Label.GestureRecognizers>
                 </Label>
             </HorizontalStackLayout>

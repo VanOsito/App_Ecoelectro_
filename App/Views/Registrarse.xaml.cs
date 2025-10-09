@@ -68,5 +68,10 @@ public partial class Registrarse : ContentPage
         pickerRegion.ItemDisplayBinding = new Binding("Nombre");
     }
 
+    private async void OnLoginTapped(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new LoginPage());
+    }
+
 }
 

@@ -5,7 +5,7 @@
              Title=""
              BackgroundColor="#F5F5F5">
 
-    <Grid Padding="30" RowDefinitions="*,Auto,Auto,*,Auto">
+    <Grid Padding="30" RowDefinitions="*,Auto,Auto,Auto,Auto,Auto">
 
         <!-- Título -->
         <Image Source="logo.png"
@@ -57,7 +57,7 @@
                 Clicked="OnLoginClicked" />
         
         <Button Text="Registrarse"
-                Grid.Row="3"
+                Grid.Row="4"
                 Margin="0,30,0,0"
                 HeightRequest="50"
                 BackgroundColor="#7F4A9B"
