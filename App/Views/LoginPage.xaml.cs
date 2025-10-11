@@ -1,9 +1,11 @@
 using Microsoft.Maui.Controls;
 using System;
+using App.Data;
 namespace App.Views;
 
 public partial class LoginPage : ContentPage
 {
+    private readonly DatabaseService _dbService = new DatabaseService();
     public LoginPage()
     {
         InitializeComponent();
@@ -15,23 +17,25 @@ public partial class LoginPage : ContentPage
 
         if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(password))
         {
-            await DisplayAlert("Error", "Debe ingresar usuario y contraseña.", "OK");
+            await DisplayAlert("Error", "Debes ingresar usuario y contraseña.", "OK");
             return;
         }
 
-        if (usuario == "admin" && password == "1234")
-        {
-            await Shell.Current.GoToAsync("InicioPage");
+        bool valido = _dbService.ValidarUsuario(usuario, password);
 
+        if (valido)
+        {
+            await DisplayAlert("Bienvenido", "Inicio de sesión exitoso", "OK");
+            await Navigation.PushAsync(new InicioPage());
         }
         else
         {
-            await DisplayAlert("Error", "Usuario o contraseña incorrectos", "OK");
+            await DisplayAlert("Error", "Correo o contraseña incorrectos", "OK");
         }
-
-        Preferences.Clear();
-
     }
+
+
+    
 
     private async void Registrarse(object sender, EventArgs e)
     {

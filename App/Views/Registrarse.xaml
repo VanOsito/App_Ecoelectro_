@@ -24,7 +24,8 @@
             <Label Text="Nombre Completo"
                    FontSize="14"
                    TextColor="#333"/>
-            <Entry Placeholder="Tu nombre completo"
+            <Entry x:Name="NombreEntry"
+                   Placeholder="Tu nombre completo"
                    HeightRequest="45"
                    BackgroundColor="#F5F5F5"
                    TextColor="Black"/>
@@ -33,7 +34,8 @@
             <Label Text="Correo Electrónico"
                    FontSize="14"
                    TextColor="#333"/>
-            <Entry Placeholder="email@ejemplo.com"
+            <Entry x:Name="CorreoEntry"
+                   Placeholder="email@ejemplo.com"
                    HeightRequest="45"
                    BackgroundColor="#F5F5F5"
                    Keyboard="Email"
@@ -43,7 +45,8 @@
             <Label Text="Contraseña"
                    FontSize="14"
                    TextColor="#333"/>
-            <Entry Placeholder="Introduce tu contraseña"
+            <Entry x:Name="ContraseñaEntry"
+                   Placeholder="Introduce tu contraseña"
                    IsPassword="True"
                    HeightRequest="45"
                    BackgroundColor="#F5F5F5"
@@ -80,7 +83,8 @@
                     TextColor="White"
                     FontAttributes="Bold"
                     CornerRadius="8"
-                    Margin="0,20,0,0"/>
+                    Margin="0,20,0,0"
+                    Clicked ="Registrarse_Clicked"/>
 
             <!-- Link Iniciar Sesión -->
             <HorizontalStackLayout HorizontalOptions="Center">

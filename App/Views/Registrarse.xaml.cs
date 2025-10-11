@@ -1,9 +1,10 @@
-﻿using App.Models;
+﻿using App.Data;
+using App.Models;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using static App.Models.RegionChile;
 
 
@@ -12,7 +13,7 @@ namespace App.Views;
 
 public partial class Registrarse : ContentPage
 {
-    public List<RegionChile.RegionChileModel> ListaRegiones { get; set; } = new();
+    private readonly DatabaseService _dbService = new DatabaseService();
 
     public Registrarse()
     {
@@ -71,6 +72,32 @@ public partial class Registrarse : ContentPage
     private async void OnLoginTapped(object sender, EventArgs e)
     {
         await Navigation.PushAsync(new LoginPage());
+    }
+    private async void Registrarse_Clicked(object sender, EventArgs e)
+    {
+        var db = new DatabaseService();
+
+        var usuario = new Usuario
+        {
+            Nombre = NombreEntry.Text,
+            Correo = CorreoEntry.Text,
+            Contraseña = ContraseñaEntry.Text,
+            RegionUsuario = pickerRegion.SelectedItem?.ToString(),
+            ComunaUsuario = pickerComuna.SelectedItem?.ToString()
+        };
+
+        bool exito = _dbService.RegistrarUsuario(usuario);
+
+        if (exito)
+        {
+            await DisplayAlert("Éxito", "Usuario registrado correctamente", "OK");
+            await Navigation.PushAsync(new LoginPage());
+
+        }
+        else
+        {
+            await DisplayAlert("Error", "No se pudo registrar el usuario", "OK");
+        }
     }
 
 }
