@@ -10,6 +10,7 @@ namespace App
             InitializeComponent();
 
             Routing.RegisterRoute("InicioPage", typeof(InicioPage));
+            Routing.RegisterRoute("Registrarse", typeof(Registrarse));
         }
     }
 }
