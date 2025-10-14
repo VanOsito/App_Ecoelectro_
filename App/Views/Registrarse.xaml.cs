@@ -60,6 +60,7 @@ public partial class Registrarse : ContentPage
             pickerComuna.ItemsSource = regionSeleccionada.Comunas;
             pickerComuna.ItemDisplayBinding = new Binding("NombreComuna");
         }
+        
     }
 
     private async void CargarDatosAsync()
@@ -77,7 +78,7 @@ public partial class Registrarse : ContentPage
     {
         var db = new DatabaseService();
 
-        
+
         if (!chkTerminos.IsChecked)
         {
             await DisplayAlert("Aviso", "Debes aceptar los Términos y Condiciones para continuar.", "OK");
@@ -89,6 +90,15 @@ public partial class Registrarse : ContentPage
             await DisplayAlert("Error", "Por favor ingresa un correo electrónico válido.", "OK");
             return;
         }
+        if (string.IsNullOrWhiteSpace(NombreEntry.Text) ||
+            string.IsNullOrWhiteSpace(ContraseñaEntry.Text) ||
+            pickerRegion.SelectedItem == null ||
+            pickerComuna.SelectedItem == null)
+        {
+            await DisplayAlert("Error", "Por favor complete todos los campos.", "OK");
+            return;
+        }
+
 
         var regionSeleccionada = pickerRegion.SelectedItem as RegionChileModel;
         var comunaSeleccionada = pickerComuna.SelectedItem as Comunas;
