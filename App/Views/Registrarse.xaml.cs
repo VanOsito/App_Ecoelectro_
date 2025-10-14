@@ -77,13 +77,30 @@ public partial class Registrarse : ContentPage
     {
         var db = new DatabaseService();
 
+        
+        if (!chkTerminos.IsChecked)
+        {
+            await DisplayAlert("Aviso", "Debes aceptar los Términos y Condiciones para continuar.", "OK");
+            return;
+        }
+
+        if (!IsValidEmail(CorreoEntry.Text))
+        {
+            await DisplayAlert("Error", "Por favor ingresa un correo electrónico válido.", "OK");
+            return;
+        }
+
+        var regionSeleccionada = pickerRegion.SelectedItem as RegionChileModel;
+        var comunaSeleccionada = pickerComuna.SelectedItem as Comunas;
+
+        
         var usuario = new Usuario
         {
-            Nombre = NombreEntry.Text,
-            Correo = CorreoEntry.Text,
-            Contraseña = ContraseñaEntry.Text,
-            RegionUsuario = pickerRegion.SelectedItem?.ToString(),
-            ComunaUsuario = pickerComuna.SelectedItem?.ToString()
+            Nombre = NombreEntry.Text ?? string.Empty,
+            Correo = CorreoEntry.Text ?? string.Empty,
+            Contraseña = ContraseñaEntry.Text ?? string.Empty,
+            RegionUsuario = regionSeleccionada?.Nombre ?? string.Empty,
+            ComunaUsuario = comunaSeleccionada?.NombreComuna ?? string.Empty
         };
 
         bool exito = _dbService.RegistrarUsuario(usuario);
@@ -92,11 +109,22 @@ public partial class Registrarse : ContentPage
         {
             await DisplayAlert("Éxito", "Usuario registrado correctamente", "OK");
             await Navigation.PushAsync(new LoginPage());
-
         }
         else
         {
             await DisplayAlert("Error", "No se pudo registrar el usuario", "OK");
+        }
+    }
+    private bool IsValidEmail(string email)
+    {
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
         }
     }
 
