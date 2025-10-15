@@ -23,10 +23,13 @@ public partial class LoginPage : ContentPage
 
         bool valido = _dbService.ValidarUsuario(usuario, password);
 
+        
+
         if (valido)
         {
             await DisplayAlert("Bienvenido", "Inicio de sesión exitoso", "OK");
-            await Navigation.PushAsync(new InicioPage());
+            App.UsuarioActual = usuario;
+            Application.Current.MainPage = new AppShellUsuario();
         }
         else
         {

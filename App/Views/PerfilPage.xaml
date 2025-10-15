@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App.Views.PerfilPage"
+             Title=""
+             BackgroundColor="#F5F5F5">
+    <VerticalStackLayout>
+        <Label 
+                Text="Wena ctmre"
+                FontSize="28"
+                HorizontalOptions="Center"
+                VerticalOptions="End"
+                Grid.Row="0"
+                FontAttributes="Bold"
+                TextColor="#333"/>
+        <Button x:Name="btnGestionUsuarios"
+                Text="Gestionar Usuarios"
+                Grid.Row="3"
+                Margin="0,30,0,0"
+                HeightRequest="50"
+                BackgroundColor="#CB6DE6"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="12"
+                Clicked="gestion" />
+
+        <Button Text="Cerrar Sesion"
+                Grid.Row="3"
+                Margin="0,30,0,0"
+                HeightRequest="50"
+                BackgroundColor="#CB6DE6"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="12"
+                Clicked="cerrar" />
+        
+    </VerticalStackLayout>
+</ContentPage>
