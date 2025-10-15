@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App.Views.GestionUsuariosPage"
+             Title=""
+             BackgroundColor="#F5F5F5">
+    <ScrollView>
+        <VerticalStackLayout Padding="20">
+
+            <!-- Lista de usuarios -->
+            <CollectionView x:Name="UsuariosCollectionView" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="5" Padding="10" BorderColor="Gray">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Nombre}" FontAttributes="Bold" />
+                                <Label Text="{Binding Correo}" />
+                                <Label Text="{Binding RegionUsuario}" FontAttributes="Italic"/>
+                                <Label Text="{Binding ComunaUsuario}" FontAttributes="Italic"/>
+                                <Label></Label>
+                                <Button Text="Editar" 
+                                        Clicked="OnEditarClicked"
+                                        BackgroundColor="#CB6DE6"
+                                        CommandParameter="{Binding}" />
+                                <Label></Label>
+                                <Button Text="Eliminar"
+                                        BackgroundColor="#DCCAE6"
+                                        TextColor="White"
+                                        CommandParameter="{Binding Id}"
+                                        Clicked="EliminarUsuario_Clicked"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Formulario de edición -->
+            <Frame x:Name="formularioFrame"
+                   IsVisible="False"
+                   BorderColor="DarkGray"
+                   Padding="15"
+                   Margin="10">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label Text="Editar Usuario" FontAttributes="Bold" FontSize="18"/>
+
+                    <Entry x:Name="nombreEntry" Placeholder="Nombre"/>
+                    <Entry x:Name="correoEntry" Placeholder="Correo"/>
+                    <!--<Entry x:Name="contraseñaEntry" Placeholder="Contraseña" IsPassword="True"/>-->
+
+                    <!-- Picker para Región -->
+                    <Picker x:Name="regionPicker"
+                            Title="Selecciona una Región"
+                            SelectedIndexChanged="OnRegionChanged"/>
+
+                    <!-- Picker para Comuna -->
+                    <Picker x:Name="comunaPicker"
+                            Title="Selecciona una Comuna"/>
+
+                    <Button x:Name="guardarBtn"
+                            Text="Guardar Cambios"
+                            BackgroundColor="#CB6DE6"
+                            Clicked="OnGuardarClicked"/>
+
+                    <Button Text="Cancelar" 
+                            Clicked="OnCancelarClicked"
+                            BackgroundColor="#83AD6C"/>
+
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

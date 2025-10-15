@@ -64,6 +64,71 @@ namespace App.Data
                 return count > 0;
             }
         }
+        public async Task<List<Usuario>> ObtenerUsuarios()
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                var query = "SELECT * FROM Usuarios"; // ajusta el nombre de tu tabla
+                var command = new SqlCommand(query, connection);
+
+                var reader = await command.ExecuteReaderAsync();
+                var usuarios = new List<Usuario>();
+
+                while (await reader.ReadAsync())
+                {
+                    usuarios.Add(new Usuario
+                    {
+                        Id = (int)reader["Id"],
+                        Nombre = reader["Nombre"] != DBNull.Value ? reader["Nombre"].ToString()! : string.Empty,
+                        Correo = reader["Correo"] != DBNull.Value ? reader["Correo"].ToString()! : string.Empty,
+                        Contraseña = reader["Contraseña"] != DBNull.Value ? reader["Contraseña"].ToString()! : string.Empty,
+                        RegionUsuario = reader["RegionUsuario"] != DBNull.Value ? reader["RegionUsuario"].ToString()! : string.Empty,
+                        ComunaUsuario = reader["ComunaUsuario"] != DBNull.Value ? reader["ComunaUsuario"].ToString()! : string.Empty,
+                    });
+
+                }
+                return usuarios;
+            }
+        }
+
+        public async Task<bool> ActualizarUsuario(Usuario usuario)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                var query = @"UPDATE Usuarios SET 
+                        Nombre=@Nombre, 
+                        Correo=@Correo, 
+                        Contraseña=@Contraseña, 
+                        RegionUsuario=@RegionUsuario, 
+                        ComunaUsuario=@ComunaUsuario
+                      WHERE Id=@Id";
+
+                var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Id", usuario.Id);
+                command.Parameters.AddWithValue("@Nombre", usuario.Nombre);
+                command.Parameters.AddWithValue("@Correo", usuario.Correo);
+                command.Parameters.AddWithValue("@Contraseña", usuario.Contraseña);
+                command.Parameters.AddWithValue("@RegionUsuario", usuario.RegionUsuario);
+                command.Parameters.AddWithValue("@ComunaUsuario", usuario.ComunaUsuario);
+
+                return await command.ExecuteNonQueryAsync() > 0;
+            }
+        }
+
+        public async Task<bool> EliminarUsuario(int id)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                var query = "DELETE FROM Usuarios WHERE Id=@Id";
+                var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Id", id);
+
+                return await command.ExecuteNonQueryAsync() > 0;
+            }
+        }
     }
 }
 
