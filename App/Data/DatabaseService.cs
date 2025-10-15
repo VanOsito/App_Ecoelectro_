@@ -69,7 +69,7 @@ namespace App.Data
             using (var connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync();
-                var query = "SELECT * FROM Usuarios"; // ajusta el nombre de tu tabla
+                var query = "SELECT * FROM Usuarios"; 
                 var command = new SqlCommand(query, connection);
 
                 var reader = await command.ExecuteReaderAsync();
@@ -127,6 +127,33 @@ namespace App.Data
                 command.Parameters.AddWithValue("@Id", id);
 
                 return await command.ExecuteNonQueryAsync() > 0;
+            }
+        }
+        public string ObtenerNombreUsuario(string correo, string contrasena )
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT Nombre FROM Usuarios WHERE Correo = @Correo AND Contraseña = @Contraseña";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Correo", correo);
+                cmd.Parameters.AddWithValue("@Contraseña", contrasena);
+
+                var result = cmd.ExecuteScalar();
+                return result != null ? result.ToString()! : string.Empty;
+            }
+        }
+        public string ObtenerNombre(string correo)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "SELECT Nombre FROM Usuarios WHERE Correo = @Correo";
+                SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@Correo", correo);
+
+                var result = cmd.ExecuteScalar();
+                return result != null ? result.ToString()! : string.Empty;
             }
         }
     }

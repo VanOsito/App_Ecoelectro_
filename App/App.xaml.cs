@@ -5,6 +5,7 @@ namespace App
     {
         public static bool UsuarioLogeado { get; set; } = false;
         public static string UsuarioActual { get; set; } = string.Empty;
+        public static string Usuarionombre { get; set; } = string.Empty;
 
         public App()
         {

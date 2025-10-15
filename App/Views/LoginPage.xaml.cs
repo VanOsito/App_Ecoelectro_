@@ -29,6 +29,7 @@ public partial class LoginPage : ContentPage
         {
             await DisplayAlert("Bienvenido", "Inicio de sesión exitoso", "OK");
             App.UsuarioActual = usuario;
+            App.Usuarionombre = _dbService.ObtenerNombre(usuario); 
             Application.Current.MainPage = new AppShellUsuario();
         }
         else
