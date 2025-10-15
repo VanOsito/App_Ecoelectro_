@@ -4,35 +4,60 @@
              x:Class="App.Views.PerfilPage"
              Title=""
              BackgroundColor="#F5F5F5">
-    <VerticalStackLayout>
-        <Label 
-                Text="Wena ctmre"
-                FontSize="28"
-                HorizontalOptions="Center"
-                VerticalOptions="End"
-                Grid.Row="0"
-                FontAttributes="Bold"
-                TextColor="#333"/>
-        <Button x:Name="btnGestionUsuarios"
-                Text="Gestionar Usuarios"
-                Grid.Row="3"
-                Margin="0,30,0,0"
-                HeightRequest="50"
-                BackgroundColor="#CB6DE6"
-                TextColor="White"
-                FontAttributes="Bold"
-                CornerRadius="12"
-                Clicked="gestion" />
+    <ScrollView>
+        <VerticalStackLayout Padding="60,150,60,60"
+                             Spacing="38"
+                             HorizontalOptions="Center"
+                             >
+            <!-- Texto de bienvenida -->
+            <Label x:Name="lblBienvenida"
+                   Text="Bienvenido,"
+                   FontSize="37"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="#333"/>
 
-        <Button Text="Cerrar Sesion"
-                Grid.Row="3"
-                Margin="0,30,0,0"
-                HeightRequest="50"
-                BackgroundColor="#CB6DE6"
-                TextColor="White"
-                FontAttributes="Bold"
-                CornerRadius="12"
-                Clicked="cerrar" />
-        
-    </VerticalStackLayout>
+            <!-- Datos del usuario -->
+            <Frame BackgroundColor="White" CornerRadius="20" Padding="20" HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label x:Name="lblNombre" Text="Nombre:" FontAttributes="Bold" />
+                    <Label x:Name="lblCorreo" Text="Correo:" />
+                    <Label x:Name="lblRegion" Text="Región:" />
+                    <Label x:Name="lblComuna" Text="Comuna:" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Botones -->
+            <!--<Button x:Name="btnEditar"
+                    Text="Editar Perfil"
+                    HeightRequest="50"
+                    BackgroundColor="#CB6DE6"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    Clicked="editar"/>-->
+
+            <Button x:Name="btnGestionUsuarios"
+                    Text="Gestionar Usuarios"
+                    Grid.Row="3"
+                    Margin="0,30,0,0"
+                    HeightRequest="50"
+                    BackgroundColor="#CB6DE6"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    Clicked="gestion" />
+
+            <Button Text="Cerrar Sesion"
+                    Grid.Row="3"
+                    Margin="0,30,0,0"
+                    HeightRequest="50"
+                    BackgroundColor="#CB6DE6"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    Clicked="cerrar" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
