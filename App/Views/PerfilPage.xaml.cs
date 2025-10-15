@@ -22,7 +22,6 @@ public partial class PerfilPage : ContentPage
         else
             btnGestionUsuarios.IsVisible = false;
 
-
     }
     private async void CargarDatosUsuario()
     {
@@ -61,5 +60,13 @@ public partial class PerfilPage : ContentPage
 
 
     }
-    
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (App.UsuarioActual != null)
+        {
+            CargarDatosUsuario();
+        }
+    }
+
 }
