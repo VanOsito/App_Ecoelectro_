@@ -24,7 +24,7 @@
 		<ApplicationTitle>App</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.app</ApplicationId>
+		<ApplicationId>com.duocuc.ecoelectro</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -68,12 +68,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="12.2.0" />
+		<PackageReference Include="CommunityToolkit.Maui.Maps" Version="3.0.3" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.2" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.5" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.90" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.9" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="RestSharp" Version="112.1.0" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
+		<PackageReference Include="System.Net.Http.Json" Version="9.0.0" />
 		<PackageReference Include="System.Runtime.Serialization.Json" Version="4.3.0" />
 	</ItemGroup>
 
@@ -82,6 +85,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\ComponentesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\DetectorPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\GestionUsuariosPage.xaml">
@@ -97,6 +103,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\MapaWebPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\MapPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\PerfilPage.xaml">

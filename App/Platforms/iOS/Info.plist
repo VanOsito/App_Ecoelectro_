@@ -26,6 +26,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<!-- ✅ Permiso de ubicación para iOS -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Se necesita tu ubicación para mostrar puntos de reciclaje cercanos.</string>
+
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
 </dict>

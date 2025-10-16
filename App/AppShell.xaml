@@ -10,9 +10,13 @@
             Title="Home"
             ContentTemplate="{DataTemplate views:LoginPage}"
             Route="LoginPage" />
-        
-        
-    
+    <TabBar>
+        <Tab Title="Mapa" Icon="map.png">
+            <ShellContent x:Name="MapaContent" />
+        </Tab>
+    </TabBar>
+
+
 
 
 </Shell>

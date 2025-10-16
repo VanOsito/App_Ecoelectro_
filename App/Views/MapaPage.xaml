@@ -1,13 +1,228 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             xmlns:converters="clr-namespace:App.Converters"
              x:Class="App.Views.MapaPage"
              Title=""
-             BackgroundColor="#F5F5F5">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             BackgroundColor="#F8F9FA">
+    <ContentPage.Resources>
+        <converters:ResiduoColorConverter x:Key="ResiduoColorConverter" />
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="120,*,90" 
+          Padding="0"
+          RowSpacing="0">
+
+        <!-- Header Elegante Mejorado y Más Compacto -->
+        <Border Grid.Row="0"
+                BackgroundColor="#FFFFFF"
+                Stroke="#E0E0E0"
+                Padding="15,8"
+                Margin="0">
+
+            <Border.Shadow>
+                <Shadow Brush="#000000"
+                        Offset="0,4"
+                        Opacity="0.1"
+                        Radius="8"/>
+            </Border.Shadow>
+
+            <Grid RowDefinitions="Auto,Auto" 
+                  RowSpacing="6">
+
+                <!-- Título y Contador -->
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="*,Auto"
+                      VerticalOptions="Center">
+
+                    <Label Grid.Column="0"
+                           Text="Puntos de Reciclaje"
+                           FontSize="18"
+                           TextColor="#2D3748"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center" />
+
+                    <Border Grid.Column="1"
+                            BackgroundColor="#805AD5"
+                            StrokeThickness="0"
+                            Padding="8,4"
+                            HorizontalOptions="End">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="6"/>
+                        </Border.StrokeShape>
+                        <Label x:Name="LblContador"
+                               Text="0 puntos"
+                               FontSize="11"
+                               TextColor="#FFFFFF"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Border>
+                </Grid>
+
+                <!-- Fila de botones: Rango y Filtro -->
+                <Grid Grid.Row="1"
+                      ColumnDefinitions="*,*"
+                      ColumnSpacing="8"
+                      VerticalOptions="Center">
+
+                    <!-- Botón de Rango COMPACTO -->
+                    <Border Grid.Column="0"
+                            BackgroundColor="#38A169"
+                            StrokeThickness="0"
+                            Padding="8,5"
+                            HeightRequest="32">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="6"/>
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnRangoClicked"/>
+                        </Border.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="Auto,*" 
+                              VerticalOptions="Center"
+                              ColumnSpacing="4">
+
+                            <!-- Icono -->
+                            <Label Grid.Column="0"
+                                   Text=""
+                                   FontSize="11"
+                                   TextColor="#FFFFFF"
+                                   VerticalOptions="Center" />
+
+                            <!-- Texto -->
+                            <Label Grid.Column="1"
+                                   Text="10 km"
+                                   x:Name="LblRangoActual"
+                                   FontSize="11"
+                                   TextColor="#FFFFFF"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Center"
+                                   LineBreakMode="NoWrap" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Botón de filtro COMPACTO -->
+                    <Border Grid.Column="1"
+                            BackgroundColor="#805AD5"
+                            StrokeThickness="0"
+                            Padding="8,5"
+                            HeightRequest="32">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="6"/>
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFiltroClicked"/>
+                        </Border.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" 
+                              VerticalOptions="Center"
+                              ColumnSpacing="4">
+
+                            <!-- Icono -->
+                            <Label Grid.Column="0"
+                                   Text=""
+                                   FontSize="11"
+                                   TextColor="#FFFFFF"
+                                   VerticalOptions="Center" />
+
+                            <!-- Texto -->
+                            <Label Grid.Column="1"
+                                   Text="Filtrar"
+                                   FontSize="11"
+                                   TextColor="#FFFFFF"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Center"
+                                   LineBreakMode="NoWrap" />
+
+                            <!-- Flecha -->
+                            <Label Grid.Column="2"
+                                   Text="⌄"
+                                   FontSize="11"
+                                   TextColor="#FFFFFF"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="End" />
+                        </Grid>
+                    </Border>
+
+                </Grid>
+
+            </Grid>
+        </Border>
+
+        <!-- Mapa -->
+        <maps:Map x:Name="MapaPrincipal"
+                  Grid.Row="1"
+                  IsShowingUser="True"
+                  MapType="Street"
+                  VerticalOptions="Fill" />
+
+        <!-- Footer Mejorado -->
+        <Border Grid.Row="2"
+                BackgroundColor="#FFFFFF"
+                Stroke="#E0E0E0"
+                StrokeThickness="0"
+                Padding="15,10"
+                Margin="0">
+
+            <Border.Shadow>
+                <Shadow Brush="#000000"
+                        Offset="0,-2"
+                        Opacity="0.1"
+                        Radius="4"/>
+            </Border.Shadow>
+
+            <Grid ColumnDefinitions="*,Auto" 
+                  ColumnSpacing="12">
+
+                <VerticalStackLayout Grid.Column="0"
+                                   VerticalOptions="Center"
+                                   Spacing="3">
+                    <Label x:Name="LblFiltroActual"
+                           Text="Mostrando: Todos los dispositivos"
+                           FontSize="12"
+                           TextColor="#4A5568"
+                           FontAttributes="Bold" />
+                    <Label x:Name="LblInfo"
+                           Text="Cargando puntos de reciclaje..."
+                           FontSize="10"
+                           TextColor="#83AD6C" />
+                </VerticalStackLayout>
+
+                <Border Grid.Column="1"
+                        BackgroundColor="#7F4A9B"
+                        StrokeThickness="0"
+                        WidthRequest="40"
+                        HeightRequest="40"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20"/>
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnActualizarUbicacionClicked"/>
+                    </Border.GestureRecognizers>
+
+                    <ImageButton
+                        Source="actualizar.png"
+                        WidthRequest="40"
+                        HeightRequest="40"
+                        Padding="10"
+                        BackgroundColor="#C993E6"
+                        CornerRadius="20"
+                        BorderColor="White"
+                        BorderWidth="2"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        Aspect="AspectFit" />
+                </Border>
+
+            </Grid>
+        </Border>
+
+    </Grid>
 </ContentPage>
