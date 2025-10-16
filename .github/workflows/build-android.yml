@@ -43,19 +43,37 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $env:ANDROID_HOME = "$env:USERPROFILE\android-sdk"
+          $toolsRoot = Join-Path $env:ANDROID_HOME 'cmdline-tools'
+          $latestDir = Join-Path $toolsRoot 'latest'
+          $tmp = Join-Path $env:RUNNER_TEMP 'android-cmd-tools'
+          New-Item -ItemType Directory -Force -Path $latestDir | Out-Null
+          New-Item -ItemType Directory -Force -Path $tmp | Out-Null
 
-          New-Item -ItemType Directory -Force -Path "$env:ANDROID_HOME\cmdline-tools\latest" | Out-Null
-          Invoke-WebRequest -Uri https://dl.google.com/android/repository/commandlinetools-win-11076708_latest.zip -OutFile cmd.zip
-          Expand-Archive cmd.zip -DestinationPath "$env:ANDROID_HOME\cmdline-tools\latest" -Force
-          Remove-Item cmd.zip
+          # Descargar y descomprimir a carpeta temporal
+          $zip = Join-Path $tmp 'cmd.zip'
+          Invoke-WebRequest -Uri https://dl.google.com/android/repository/commandlinetools-win-11076708_latest.zip -OutFile $zip
+          Expand-Archive $zip -DestinationPath $tmp -Force
+          Remove-Item $zip
 
-          $SdkMgr = "$env:ANDROID_HOME\cmdline-tools\latest\bin\sdkmanager.bat"
+          # Mover la carpeta 'cmdline-tools' dentro de 'latest' (estructura esperada)
+          if (Test-Path (Join-Path $tmp 'cmdline-tools')) {
+            Copy-Item -Recurse -Force (Join-Path $tmp 'cmdline-tools') $latestDir
+          } elseif (Test-Path (Join-Path $tmp 'tools')) {
+            # Por si Google cambia el nombre (fallback)
+            Copy-Item -Recurse -Force (Join-Path $tmp 'tools') $latestDir
+          }
 
-          # Aceptar licencias (enviar muchas 'y' por la tubería)
+          # Ruta correcta del sdkmanager (nota: hay una carpeta 'cmdline-tools' adicional)
+          $SdkMgr = Join-Path $latestDir 'cmdline-tools\bin\sdkmanager.bat'
+          if (-not (Test-Path $SdkMgr)) {
+            throw "No se encontró sdkmanager en: $SdkMgr"
+          }
+
+          # Aceptar licencias (inyectamos muchas 'y')
           $accept = ("y`r`n" * 200)
           $accept | & $SdkMgr --licenses | Write-Output
 
-          # Instalar componentes necesarios
+          # Instalar componentes necesarios (ajusta versiones si tu proyecto usa otro compileSdk)
           & $SdkMgr "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
 
