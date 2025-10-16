@@ -22,9 +22,9 @@
             Icon="home.png"
             ContentTemplate="{DataTemplate views:InicioPage}" />
         <ShellContent
-            Title="Componentes"
-            Icon="componentes.png"
-            ContentTemplate="{DataTemplate views:ComponentesPage}" />
+            Title="Cámara"
+            Icon="camara.png"
+            ContentTemplate="{DataTemplate views:CameraPage}" />
 
         <ShellContent
             Title="Perfil"
