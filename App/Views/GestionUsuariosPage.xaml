@@ -126,7 +126,7 @@
 
                                 <Button Text="Editar" 
                                         Clicked="OnEditarClicked"
-                                        BackgroundColor="#CB6DE6"
+                                        BackgroundColor="#C993E6"
                                         TextColor="White"
                                         CommandParameter="{Binding}" />
                                 <Label></Label>
