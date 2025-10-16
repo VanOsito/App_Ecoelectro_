@@ -33,7 +33,7 @@
         <ShellContent
             Title="Punto de Reciclaje"
             Icon="mapa.png"
-            ContentTemplate="{DataTemplate views:MapPage}" />
+            ContentTemplate="{DataTemplate views:MapaPage}" />
     </TabBar>
 
 </Shell>
