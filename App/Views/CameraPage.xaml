@@ -15,7 +15,7 @@
                FontSize="16" />
             <Label Text="3. Captura una imagen clara para una identificación precisa."
                FontSize="16" />
-            <Button Text="Tomar foto" BackgroundColor="#C993E6" Clicked="OnTakePhotoClicked"/>
+            <Button Text="Tomar foto" BackgroundColor="#7F4A9B" Clicked="OnTakePhotoClicked"/>
             <Button Text="Seleccionar de galería" BackgroundColor="#83AD6C" Clicked="OnPickPhotoClicked"/>
             <Button Text="Cancelar" BackgroundColor="#DCCAE6" Clicked="OnCancel"/>
         </VerticalStackLayout>

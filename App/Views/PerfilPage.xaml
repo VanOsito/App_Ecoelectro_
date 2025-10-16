@@ -97,7 +97,7 @@
             <Button x:Name="btnGestionUsuarios"
                     Text="Gestionar Usuarios"
                     HeightRequest="48"
-                    BackgroundColor="#CB6DE6"
+                    BackgroundColor="#7F4A9B"
                     TextColor="White"
                     FontSize="15"
                     FontAttributes="Bold"
