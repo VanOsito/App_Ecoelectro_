@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App.Views.CameraResultPage"
+             Title="CameraResultPage">
+    <VerticalStackLayout>
+        <VerticalStackLayout Padding="20" Spacing="12">
+            <Image x:Name="Preview" HeightRequest="280" Aspect="AspectFit" />
+            <ActivityIndicator x:Name="Busy" IsVisible="False" IsRunning="False" />
+            <Label x:Name="ResultLabel" FontSize="18" />
+            <Button Text="Clasificar de nuevo" Clicked="OnClassifyAgain" />
+        </VerticalStackLayout>
+
+        <!-- Lista de componentes (nombre, estado y descripción) -->
+        <CollectionView x:Name="ComponentesList" Margin="12">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout Padding="8" Spacing="4">
+                        <Label Text="{Binding Nombre}" FontAttributes="Bold" FontSize="16" />
+                        <Label Text="{Binding Estado}" TextColor="Gray" FontSize="14" />
+                        <Label Text="{Binding Descripcion}" FontSize="13" LineBreakMode="TailTruncation" />
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

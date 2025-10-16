@@ -5,10 +5,15 @@
              Title=""
              BackgroundColor="#F5F5F5">
     <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-        
+        <Label Text="Hola!" FontSize="24" HorizontalOptions="Center" />
+        <Label Text="Cámara" FontSize="24" HorizontalOptions="Center" />
+
+        <Button Text="Tomar foto" Clicked="OnTakePhoto" HeightRequest="48"/>
+
+        <Image x:Name="LastPhoto"
+       HeightRequest="220"
+       Aspect="AspectFill"
+       BackgroundColor="#EEE" />
+
     </VerticalStackLayout>
 </ContentPage>

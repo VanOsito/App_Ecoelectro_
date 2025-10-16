@@ -1,6 +1,10 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
-using App.Models;   
+using App.Models;
+using Microsoft.Data.SqlClient;
+
 namespace App.Data
 {
     public class DatabaseService
@@ -129,7 +133,8 @@ namespace App.Data
                 return await command.ExecuteNonQueryAsync() > 0;
             }
         }
-        public string ObtenerNombreUsuario(string correo, string contrasena )
+
+        public string ObtenerNombreUsuario(string correo, string contrasena)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -155,6 +160,74 @@ namespace App.Data
                 var result = cmd.ExecuteScalar();
                 return result != null ? result.ToString()! : string.Empty;
             }
+        }
+
+        private static string NormalizarEtiqueta(string raw)
+        {
+            var x = (raw ?? "").Trim();
+            return x;
+        }
+
+        public async Task<List<ComponentInfo>> ObtenerComponentesPorDispositivoAsync(string etiquetaModelo)
+        {
+            var deviceLabel = NormalizarEtiqueta(etiquetaModelo);
+
+            const string sql = @"
+SELECT
+    c.componente_id,
+    c.nombre_componente,
+    c.descripcion_componente,
+    -- flags de la vista ya resueltos:
+    v.is_recyclable, v.is_reusable, v.is_sellable, v.is_hazardous,
+    v.guidance_short, v.guidance_url
+FROM dbo.v_dispositivo_componentes v
+JOIN dbo.componentes_catalogo c ON c.componente_id = v.componente_id
+WHERE v.nombre_dispositivo = @label
+ORDER BY c.nombre_componente;";
+
+            var lista = new List<ComponentInfo>();
+
+            try
+            {
+                using var cn = new SqlConnection(connectionString);
+                await cn.OpenAsync();
+
+                using var cmd = new SqlCommand(sql, cn);
+                cmd.Parameters.Add(new SqlParameter("@label", SqlDbType.NVarChar, 80) { Value = deviceLabel });
+
+                using var rd = await cmd.ExecuteReaderAsync();
+                while (await rd.ReadAsync())
+                {
+                    var isRecyclable = rd.GetBoolean(rd.GetOrdinal("is_recyclable"));
+                    var isReusable = rd.GetBoolean(rd.GetOrdinal("is_reusable"));
+                    var isSellable = rd.GetBoolean(rd.GetOrdinal("is_sellable"));
+                    var isHazardous = rd.GetBoolean(rd.GetOrdinal("is_hazardous"));
+
+                    string estado =
+                        isRecyclable ? "Reciclable" :
+                        isReusable ? "Reutilizable" :
+                        isSellable ? "Vendible" :
+                        isHazardous ? "Peligroso" : "—";
+
+                    var guidanceShort = rd["guidance_short"] as string;
+                    var desc = rd["descripcion_componente"] as string;
+
+                    lista.Add(new ComponentInfo
+                    {
+                        Id = rd.GetInt32(rd.GetOrdinal("componente_id")),
+                        Nombre = (string)rd["nombre_componente"],
+                        Estado = estado,
+                        Descripcion = !string.IsNullOrWhiteSpace(guidanceShort) ? guidanceShort : (desc ?? ""),
+                        GuidanceUrl = rd["guidance_url"] as string
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DB] Error ObtenerComponentesPorDispositivoAsync: {ex.Message}");
+            }
+
+            return lista;
         }
     }
 }

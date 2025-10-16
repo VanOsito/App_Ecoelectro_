@@ -16,7 +16,12 @@ namespace App
             Routing.RegisterRoute("Registrarse", typeof(Registrarse));
             Routing.RegisterRoute("GestionUsuariosPage", typeof(GestionUsuariosPage));
 
-            
+            Routing.RegisterRoute(nameof(CameraPage), typeof(CameraPage));
+            Routing.RegisterRoute(nameof(CameraResultPage), typeof(CameraResultPage));
+
+
+
+
         }
         private void ConfigurarMapaPorPlataforma()
         {

@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using App.Services;
 using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
 using Microsoft.Maui.Maps;
+using App.Views;
+using App.Data;
 
 namespace App
 {
@@ -24,8 +27,16 @@ namespace App
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
+            // DI: nuestro servicio de inferencia (singleton)
+            builder.Services.AddSingleton<IImageClassifier, OnnxImageClassifier>();
+
+            builder.Services.AddTransient<CameraResultPage>();
+
+            builder.Services.AddSingleton<DatabaseService>();
+
 
             return builder.Build();
+
         }
     }
 }
