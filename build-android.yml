@@ -1,0 +1,95 @@
+name: Build MAUI Android (APK) — f_gaby
+
+on:
+  push:
+    branches: [ f_gaby ]
+    paths:
+      - 'App.sln'                           # dispara si cambia la solución
+      - 'App/**'                             # dispara si cambia cualquier archivo del proyecto
+      - '.github/workflows/build-android.yml'
+  workflow_dispatch:
+
+env:
+  SOLUTION: App.sln
+  PROJECT: App/App.csproj                   # <- si tu .csproj se llama distinto, cámbialo aquí
+  TF: net9.0-android                        # <- cambia a net8.0-android si tu proyecto usa .NET 8
+
+jobs:
+  build-android:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'           # cambia a 8.0.x si usas net8
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.sln', '**/*.csproj', '**/nuget.config') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Instalar workload MAUI (Android)
+        run: dotnet workload install maui-android
+
+      - name: Setup Java (requerido por sdkmanager)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Instalar Android SDK (cmdline-tools + plataformas)
+        shell: pwsh
+        env:
+          ANDROID_HOME: ${{ runner.temp }}\android-sdk
+          ANDROID_SDK_ROOT: ${{ runner.temp }}\android-sdk
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $toolsRoot = Join-Path $env:ANDROID_SDK_ROOT 'cmdline-tools'
+          $latestDir = Join-Path $toolsRoot 'latest'
+          $tmp = Join-Path $env:RUNNER_TEMP 'android-cmd-tools'
+          New-Item -ItemType Directory -Force -Path $latestDir | Out-Null
+          New-Item -ItemType Directory -Force -Path $tmp | Out-Null
+
+          # Descargar y descomprimir a temporal
+          $zip = Join-Path $tmp 'cmd.zip'
+          Invoke-WebRequest -Uri https://dl.google.com/android/repository/commandlinetools-win-11076708_latest.zip -OutFile $zip
+          Expand-Archive $zip -DestinationPath $tmp -Force
+          Remove-Item $zip
+
+          # Copiar el CONTENIDO de 'cmdline-tools' dentro de 'latest' (evita anidar 'latest\cmdline-tools\bin')
+          $src = Join-Path $tmp 'cmdline-tools'
+          if (-not (Test-Path $src)) { throw "No se encontró carpeta 'cmdline-tools' en el ZIP" }
+          Copy-Item -Recurse -Force (Join-Path $src '*') $latestDir
+
+          # Ruta correcta del sdkmanager
+          $SdkMgr = Join-Path $latestDir 'bin\sdkmanager.bat'
+          if (-not (Test-Path $SdkMgr)) {
+            throw "No se encontró sdkmanager en: $SdkMgr"
+          }
+
+          # Aceptar licencias (inyectamos muchas 'y')
+          cmd.exe /c "echo y|`"$SdkMgr`" --licenses" | Write-Output
+
+          # Instalar componentes requeridos (ajusta versiones si tu proyecto usa otro compileSdk)
+          cmd.exe /c `"$SdkMgr`" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+
+
+      - name: Restore (solution)
+        run: dotnet restore "${{ env.SOLUTION }}"
+
+      - name: Publicar APK
+        run: dotnet publish "${{ env.PROJECT }}" -c Release -f ${{ env.TF }} -p:AndroidPackageFormat=apk -o out
+
+      - name: Subir artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-f_gaby
+          path: out
