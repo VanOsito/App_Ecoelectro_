@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App.Views.CameraPage"
+             BackgroundColor="#F5F5F5">
+    
+        <VerticalStackLayout Padding="24" Spacing="18">
+            <Label Text="📷 Instrucciones para capturar tu dispositivo"
+               FontSize="20"
+               FontAttributes="Bold"
+               HorizontalOptions="Center" />
+            <Label Text="1. Coloca tu dispositivo electrónico sobre una superficie plana y sin ruido visual."
+               FontSize="16" />
+            <Label Text="2. Asegúrate de tener buena iluminación."
+               FontSize="16" />
+            <Label Text="3. Captura una imagen clara para una identificación precisa."
+               FontSize="16" />
+            <Button Text="Tomar foto" BackgroundColor="#7F4A9B" Clicked="OnTakePhotoClicked"/>
+            <Button Text="Seleccionar de galería" BackgroundColor="#83AD6C" Clicked="OnPickPhotoClicked"/>
+            <Button Text="Cancelar" BackgroundColor="#DCCAE6" Clicked="OnCancel"/>
+        </VerticalStackLayout>
+    
+</ContentPage>

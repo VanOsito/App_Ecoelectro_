@@ -5,62 +5,69 @@
              Title=""
              BackgroundColor="#F5F5F5">
 
-    <Grid Padding="30" RowDefinitions="*,Auto,Auto,*,Auto">
+    <ScrollView>
+        <VerticalStackLayout Padding="15" Spacing="35">
+            
 
-        <!-- Título -->
-        <Image Source="logo.png"
-               HeightRequest="200"
-               WidthRequest="190"
-               HorizontalOptions="Center"
-               VerticalOptions="Start"
-               Grid.Row="0"/>
-        
-        <Label Text="Bienvenido"
-               FontSize="28"
-               FontFamily="OpenSans-Regular"
-               HorizontalOptions="Center"
-               VerticalOptions="End"
-               Grid.Row="0"
-               FontAttributes="Bold"
-               TextColor="#333" />
+            <!-- Logo -->
+            <Image Source="logo.png"
+                   HeightRequest="210"
+                   WidthRequest="210"
+                   HorizontalOptions="Center" />
 
-        <Entry x:Name="txtUsuario"
-               Placeholder="Usuario"
-               Grid.Row="1"
-               Margin="0,20,0,10"
-               HeightRequest="45"
-               BackgroundColor="White"
-               TextColor="Black"
-               PlaceholderColor="#999"
-               Keyboard="Text" />
+            <!-- Título -->
+            <Label Text="Bienvenido"
+                   FontSize="30"
+                   FontFamily="OpenSans-Regular"
+                   FontAttributes="Bold"
+                   TextColor="#333"
+                   HorizontalOptions="Center" />
 
-        <Entry x:Name="txtPassword"
-               Placeholder="Contraseña"
-               IsPassword="True"
-               Grid.Row="2"
-               HeightRequest="45"
-               BackgroundColor="White"
-               TextColor="Black"
-               PlaceholderColor="#999"
-               Keyboard="Text" />
+            <!-- Campos -->
+            <Entry x:Name="txtUsuario"
+                   Placeholder="Usuario"
+                   HeightRequest="45"
+                   BackgroundColor="White"
+                   TextColor="Black"
+                   PlaceholderColor="#999"
+                   Keyboard="Text"
+                   Margin="0,10,0,0" />
 
-        <!-- Botón Ingresar -->
-        <Button Text="Ingresar"
-                Grid.Row="3"
-                Margin="0,30,0,0"
-                HeightRequest="50"
-                BackgroundColor="#7F4A9B"
-                TextColor="White"
-                FontAttributes="Bold"
-                CornerRadius="12"
-                Clicked="OnLoginClicked" />
+            <Entry x:Name="txtPassword"
+                   Placeholder="Contraseña"
+                   IsPassword="True"
+                   HeightRequest="45"
+                   BackgroundColor="White"
+                   TextColor="Black"
+                   PlaceholderColor="#999"
+                   Keyboard="Text" />
 
-        <!-- Versión / Footer -->
-        <Label Text="versión 1.0.0"
-               Grid.Row="4"
-               HorizontalOptions="End"
-               VerticalOptions="End"
-               FontSize="12"
-               TextColor="#888" />
-    </Grid>
+            <!-- Botón Ingresar -->
+            <Button Text="Ingresar"
+                    BackgroundColor="#7F4A9B"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    HeightRequest="50"
+                    Clicked="OnLoginClicked" />
+
+            <!-- Botón Registrarse -->
+            <Button Text="Registrarse"
+                    BackgroundColor="#B388FF"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    HeightRequest="50"
+                    Clicked="Registrarse" />
+
+            <!-- Footer -->
+            <Label Text="versión 1.0.0"
+                   FontSize="12"
+                   TextColor="#888"
+                   Opacity="0.6"
+                   HorizontalOptions="Center"
+                   Margin="0,15,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
+

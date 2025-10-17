@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             xmlns:models="clr-namespace:App.Models;assembly=App"
+             x:Class="App.Views.MapPage"
+             Title=""
+             BackgroundColor="#F5F5F5">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="10">
+        <!-- Filtro RAEE -->
+        <Picker x:Name="FiltroPicker"
+                Grid.Row="0"
+                Title="Filtrar por dispositivo RAEE"
+                SelectedIndexChanged="OnFiltroCambiado"
+                BackgroundColor="White" />
+
+        <!-- CollectionView para mostrar resultados cercanos -->
+        <CollectionView x:Name="cvPlaces"
+                       Grid.Row="1"
+                       HeightRequest="120"
+                       SelectionChanged="CvPlaces_SelectionChanged"
+                       BackgroundColor="White">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:PuntoReciclaje">
+                    <Grid Padding="10" ColumnDefinitions="Auto,*,Auto">
+                        <!-- Indicador de color -->
+                        <BoxView Grid.Column="0"
+                                WidthRequest="4"
+                                HeightRequest="40"
+                                VerticalOptions="Center"
+                                BackgroundColor="{Binding Residuos, Converter={x:StaticResource ResiduoColorConverter}}" />
+
+                        <!-- Información del punto -->
+                        <VerticalStackLayout Grid.Column="1" Margin="10,0,0,0">
+                            <Label Text="{Binding Nombre}" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#333" />
+                            <Label Text="{Binding Direccion}" 
+                                   FontSize="12" 
+                                   TextColor="Gray" />
+                            <Label Text="{Binding Comuna}" 
+                                   FontSize="10" 
+                                   TextColor="Blue" />
+                            <Label Text="{Binding DistanciaTexto}" 
+                                   FontSize="10" 
+                                   TextColor="Green" 
+                                   FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <!-- Icono -->
+                        <Label Grid.Column="2" 
+                               Text="📍" 
+                               FontSize="20" 
+                               VerticalOptions="Center" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Mapa -->
+        <maps:Map x:Name="MapaPrincipal"
+                  Grid.Row="2"
+                  IsShowingUser="True"
+                  MapType="Street" />
+
+        <!-- Información y botones -->
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Padding="0,10">
+            <Label x:Name="LblInfo" 
+                   Grid.Column="0"
+                   TextColor="#333" 
+                   FontSize="12"
+                   VerticalOptions="Center" />
+
+            <Button Grid.Column="1"
+                    Text="Actualizar"
+                    Clicked="OnActualizarUbicacionClicked"
+                    BackgroundColor="#805AD5"
+                    TextColor="White"
+                    Padding="15,8"
+                    CornerRadius="20"
+                    FontSize="12"
+                    FontAttributes="Bold" />
+        </Grid>
+    </Grid>
+</ContentPage>

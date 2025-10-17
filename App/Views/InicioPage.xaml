@@ -5,24 +5,15 @@
              Title=""
              BackgroundColor="#F5F5F5">
     <VerticalStackLayout>
-        <Label 
-            Text="Wena ctmre"
-            FontSize="28"
-            HorizontalOptions="Center"
-            VerticalOptions="End"
-            Grid.Row="0"
-            FontAttributes="Bold"
-            TextColor="#333"/>
+        <Label Text="Hola!" FontSize="24" HorizontalOptions="Center" />
+        <Label Text="Cámara" FontSize="24" HorizontalOptions="Center" />
 
-            <Button Text="Cerrar Sesion"
-            Grid.Row="3"
-            Margin="0,30,0,0"
-            HeightRequest="50"
-            BackgroundColor="#CB6DE6"
-            TextColor="White"
-            FontAttributes="Bold"
-            CornerRadius="12"
-            Clicked="cerrar" />
-        
+        <Button Text="Tomar foto" Clicked="OnTakePhoto" HeightRequest="48"/>
+
+        <Image x:Name="LastPhoto"
+       HeightRequest="220"
+       Aspect="AspectFill"
+       BackgroundColor="#EEE" />
+
     </VerticalStackLayout>
 </ContentPage>

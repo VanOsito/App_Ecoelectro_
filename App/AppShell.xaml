@@ -7,9 +7,23 @@
     Title="App">
 
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate views:LoginPage}"
-        Route="LoginPage" />
+    Title="Home"
+    ContentTemplate="{DataTemplate views:LoginPage}"
+    Route="LoginPage"
+    Shell.NavBarIsVisible="False"
+    Shell.FlyoutBehavior="Disabled" />
+
+    <ShellContent
+    x:Name="MapaContent"
+    ContentTemplate="{DataTemplate views:MapaPage}"
+    Route="MapaPage" />
+    
+    <ShellContent
+    Title="Resultado"
+    ContentTemplate="{DataTemplate views:CameraResultPage}"
+    Route="CameraResultPage" />
+
+
 
 
 </Shell>

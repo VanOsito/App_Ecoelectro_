@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App.Views.MapaWebPage"
+             Title="MapaWebPage">
+    <Grid RowDefinitions="*,Auto">
+        <WebView x:Name="MapaWebView" 
+                 HeightRequest="500" />
+
+        <Button Text="🔄 Actualizar Ubicación"
+                Grid.Row="1"
+                Clicked="OnActualizarUbicacionClicked"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                Margin="20"
+                HeightRequest="50" />
+    </Grid>
+</ContentPage>

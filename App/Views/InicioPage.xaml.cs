@@ -1,4 +1,9 @@
 namespace App.Views;
+using System;
+using System.Diagnostics;
+using System.IO;
+
+using Utils;
 
 public partial class InicioPage : ContentPage
 {
@@ -6,12 +11,24 @@ public partial class InicioPage : ContentPage
 	{
 		InitializeComponent();
 	}
-    private async void cerrar(object sender, EventArgs e)
+
+    // -- ON APPEARING --
+    protected override void OnAppearing()
     {
-        Preferences.Clear(); 
+        base.OnAppearing();
 
-        await Shell.Current.GoToAsync("//LoginPage");
-
+        // Mostrar la última foto si existe
+        if (!string.IsNullOrWhiteSpace(PhotoStore.LastPhotoPath) && File.Exists(PhotoStore.LastPhotoPath))
+        {
+            LastPhoto.Source = ImageSource.FromFile(PhotoStore.LastPhotoPath);
+        }
     }
+
+    // -- TOMAR FOTO --
+    private async void OnTakePhoto(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(CameraPage));
+    }
+
 
 }

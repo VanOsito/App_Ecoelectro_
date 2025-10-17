@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:Microsoft.Maui.Controls;assembly=Microsoft.Maui.Controls"
+             x:Class="App.Views.PerfilPage"
+             Title=""
+             BackgroundColor="#F9F9FB">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Contenido desplazable -->
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="25,60,25,25" Spacing="20">
+
+                <!-- Sección de bienvenida -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="20"
+                       Padding="25"
+                       HasShadow="True"
+                       HorizontalOptions="FillAndExpand">
+                    <VerticalStackLayout Spacing="10"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center">
+
+                        <Image Source="perfil.png"
+                               HeightRequest="85"
+                               WidthRequest="85"
+                               Aspect="AspectFill"
+                               HorizontalOptions="Center">
+                            <Image.Clip>
+                                <EllipseGeometry Center="42.5,42.5" RadiusX="42.5" RadiusY="42.5" />
+                            </Image.Clip>
+                        </Image>
+                        <Label x:Name="lblBienvenida"
+                               Text="Bienvenido,"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               TextColor="#333"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Información del usuario -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="20"
+                       Padding="20"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="12">
+
+                        <HorizontalStackLayout>
+                            <Label Text="👤" FontSize="16" />
+                            <Label x:Name="lblNombre"
+                                   Text="Nombre de usuario"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   TextColor="#333" />
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout>
+                            <Label Text="📧" FontSize="16" />
+                            <Label x:Name="lblCorreo"
+                                   Text="Correo usuario"
+                                   FontSize="15"
+                                   TextColor="#555"
+                                   LineBreakMode="WordWrap" />
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout>
+                            <Label Text="📍" FontSize="16" />
+                            <Label x:Name="lblRegion"
+                                   Text="Región de usuario"
+                                   FontSize="15"
+                                   TextColor="#555"
+                                   LineBreakMode="WordWrap" />
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout>
+                            <Label Text="🏠" FontSize="16" />
+                            <Label x:Name="lblComuna"
+                                   Text="Comuna de usuario"
+                                   FontSize="15"
+                                   TextColor="#555"
+                                   LineBreakMode="WordWrap" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Botones al final -->
+        <VerticalStackLayout Grid.Row="1"
+                             Padding="25,15"
+                             Spacing="12"
+                             VerticalOptions="End"
+                             BackgroundColor="#F9F9FB">
+
+            <Button x:Name="btnGestionUsuarios"
+                    Text="Gestionar Usuarios"
+                    HeightRequest="48"
+                    BackgroundColor="#7F4A9B"
+                    TextColor="White"
+                    FontSize="15"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    Clicked="gestion" />
+
+            <Button Text="Cerrar Sesión"
+                    HeightRequest="48"
+                    BackgroundColor="#DCCAE6"
+                    TextColor="White"
+                    FontSize="15"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    Clicked="cerrar" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

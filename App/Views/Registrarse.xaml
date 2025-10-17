@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App.Views.Registrarse"
+             Title=""
+             BackgroundColor="#F5F5F5">
+    <ScrollView>
+        <VerticalStackLayout Padding="15" Spacing="15">
+
+            <!-- Título -->
+            <Label Text="Crear Cuenta"
+                   FontSize="22"
+                   HorizontalOptions="Center"
+                   FontAttributes="Bold"
+                   TextColor="#333"/>
+
+            <Label Text="Únete a Ecolectro y empieza a reciclar de forma inteligente."
+                   FontSize="14"
+                   TextColor="#666"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,0,0,20"/>
+
+            <!-- Nombre Completo -->
+            <Label Text="Nombre Completo"
+                   FontSize="14"
+                   TextColor="#333"/>
+            <Entry x:Name="NombreEntry"
+                   Placeholder="Tu nombre completo"
+                   HeightRequest="45"
+                   BackgroundColor="#F5F5F5"
+                   TextColor="Black"/>
+
+            <!-- Correo -->
+            <Label Text="Correo Electrónico"
+                   FontSize="14"
+                   TextColor="#333"/>
+            <Entry x:Name="CorreoEntry"
+                   Placeholder="email@ejemplo.com"
+                   HeightRequest="45"
+                   BackgroundColor="#F5F5F5"
+                   Keyboard="Email"
+                   TextColor="Black"/>
+
+            <!-- Contraseña -->
+            <Label Text="Contraseña"
+                   FontSize="14"
+                   TextColor="#333"/>
+            <Entry x:Name="ContraseñaEntry"
+                   Placeholder="Introduce tu contraseña"
+                   IsPassword="True"
+                   HeightRequest="45"
+                   BackgroundColor="#F5F5F5"
+                   TextColor="Black"/>
+
+            <!-- Región -->
+            <Label Text="Region"
+                   FontSize="14"
+                   TextColor="#333"/>
+            <Picker
+                x:Name="pickerRegion"
+                ItemsSource="{Binding ListaRegiones}"
+                ItemDisplayBinding="{Binding Nombre}"
+                Title="Selecciona una Región" 
+                BackgroundColor="#F5F5F5"
+                TextColor="Black"
+                SelectedIndexChanged="pickerRegion_SelectedIndexChanged"/>
+
+            <Label Text="Comuna"
+                   FontSize="14"
+                   TextColor="#333"/>
+            <Picker x:Name="pickerComuna" Title="Selecciona Comuna"
+                    BackgroundColor="#F5F5F5"
+                    TextColor="Black"/>
+
+            <!-- Checkbox Términos -->
+            <HorizontalStackLayout HorizontalOptions="Start" Spacing="4">
+                <CheckBox x:Name="chkTerminos" Color="Green" />
+                <Label Text="Acepto los " TextColor="Black" VerticalOptions="Center" />
+                <Label Text="Términos y Condiciones"
+                       TextColor="Green"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+
+            <!-- Botón Registrarse -->
+            <Button Text="Registrarse"
+                    HeightRequest="50"
+                    BackgroundColor="#7F4A9B"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="8"
+                    Margin="0,20,0,0"
+                    Clicked ="Registrarse_Clicked"/>
+
+            <!-- Link Iniciar Sesión -->
+            <HorizontalStackLayout HorizontalOptions="Center">
+                <Label Text="¿Ya tienes una cuenta?"
+                       TextColor="Black"/>
+                <Label Text=" Iniciar Sesión"
+                       TextColor="Green"
+                       FontAttributes="Bold">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnLoginTapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
