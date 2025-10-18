@@ -13,25 +13,36 @@ public partial class PerfilPage : ContentPage
     public PerfilPage()
 	{
 		InitializeComponent();
-        if (App.UsuarioActual != null)
-        {
-            CargarDatosUsuario();
-        }
+        //if (App.UsuarioActual != null)
+        //{
+        //    CargarDatosUsuario();
+        //}
 
-        if (App.UsuarioActual == "admin@admin.com")
-            btnGestionUsuarios.IsVisible = true;
-        else
-            btnGestionUsuarios.IsVisible = false;
+        //if (App.UsuarioActual == "admin@admin.com")
+        //    btnGestionUsuarios.IsVisible = true;
+        //else
+        //    btnGestionUsuarios.IsVisible = false;
 
     }
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        if (App.UsuarioActual != null)
+
+        if (App.UsuarioEnSesion != null)
         {
             CargarDatosUsuario();
+
+            if (App.UsuarioEnSesion.Correo == "admin@admin.com")
+                btnGestionUsuarios.IsVisible = true;
+            else
+                btnGestionUsuarios.IsVisible = false;
+        }
+        else
+        {
+            btnGestionUsuarios.IsVisible = false;
         }
     }
+
     private void CargarDatosUsuario()
     {
         var usuario = App.UsuarioEnSesion;
