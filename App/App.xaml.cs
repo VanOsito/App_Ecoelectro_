@@ -1,4 +1,5 @@
 ﻿using App.Views;
+using App.Models;
 namespace App
 {
     public partial class App : Application
@@ -6,6 +7,8 @@ namespace App
         public static bool UsuarioLogeado { get; set; } = false;
         public static string UsuarioActual { get; set; } = string.Empty;
         public static string Usuarionombre { get; set; } = string.Empty;
+        public static Usuario UsuarioEnSesion { get; set; }
+
 
         public App()
         {
