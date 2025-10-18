@@ -8,7 +8,8 @@ namespace App.Views;
 public partial class PerfilPage : ContentPage
 {
     private readonly DatabaseService _dbService = new DatabaseService();
-    private Usuario _usuario;
+    
+
     public PerfilPage()
 	{
 		InitializeComponent();
@@ -23,24 +24,25 @@ public partial class PerfilPage : ContentPage
             btnGestionUsuarios.IsVisible = false;
 
     }
-    private async void CargarDatosUsuario()
+    protected override void OnAppearing()
     {
-        string correo = App.UsuarioActual;
-
-        if (string.IsNullOrEmpty(correo))
+        base.OnAppearing();
+        if (App.UsuarioActual != null)
+        {
+            CargarDatosUsuario();
+        }
+    }
+    private void CargarDatosUsuario()
+    {
+        var usuario = App.UsuarioEnSesion;
+        if (usuario == null)
             return;
 
-        var usuarios = await _dbService.ObtenerUsuarios();
-        var usuario = usuarios.FirstOrDefault(u => u.Correo == correo);
-
-        if (usuario != null)
-        {
-            lblBienvenida.Text = $"Bienvenido, {usuario.Nombre}";
-            lblNombre.Text = $"Nombre: {usuario.Nombre}";
-            lblCorreo.Text = $"Correo: {usuario.Correo}";
-            lblRegion.Text = $"Región: {usuario.RegionUsuario}";
-            lblComuna.Text = $"Comuna: {usuario.ComunaUsuario}";
-        }
+        lblBienvenida.Text = $"Bienvenido, {usuario.Nombre}";
+        lblNombre.Text = $"Nombre: {usuario.Nombre}";
+        lblCorreo.Text = $"Correo: {usuario.Correo}";
+        lblRegion.Text = $"Región: {usuario.RegionUsuario}";
+        lblComuna.Text = $"Comuna: {usuario.ComunaUsuario}";
     }
 
 
@@ -49,8 +51,8 @@ public partial class PerfilPage : ContentPage
         bool confirmar = await DisplayAlert("Cerrar sesión", "¿Deseas cerrar sesión?", "Sí", "No");
         if (confirmar)
         {
+            App.UsuarioEnSesion = null; // <--- Limpia la sesión
             Application.Current.MainPage = new NavigationPage(new LoginPage());
-
         }
     }
     private async void gestion(object sender, EventArgs e)
@@ -60,13 +62,6 @@ public partial class PerfilPage : ContentPage
 
 
     }
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        if (App.UsuarioActual != null)
-        {
-            CargarDatosUsuario();
-        }
-    }
+    
 
 }

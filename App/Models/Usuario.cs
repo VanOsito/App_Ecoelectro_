@@ -15,6 +15,8 @@ namespace App.Models
         public required string Contraseña { get; set; }
         public required string RegionUsuario { get; set; }
         public required string ComunaUsuario { get; set; }
+
+
     }
 }
 
