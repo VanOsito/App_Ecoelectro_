@@ -2,26 +2,102 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App.Views.CameraResultPage"
-             Title="CameraResultPage">
-    <VerticalStackLayout>
-        <VerticalStackLayout Padding="20" Spacing="12">
-            <Image x:Name="Preview" HeightRequest="280" Aspect="AspectFit" />
-            <ActivityIndicator x:Name="Busy" IsVisible="False" IsRunning="False" />
-            <Label x:Name="ResultLabel" FontSize="18" />
-            <Button Text="Clasificar de nuevo" Clicked="OnClassifyAgain" />
+             Title="Resultado de Cámara"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto, *" Padding="12" RowSpacing="10">
+
+        <!-- 0: Preview y controles -->
+        <VerticalStackLayout Grid.Row="0" Padding="8" Spacing="8">
+            <Image x:Name="Preview" HeightRequest="240" Aspect="AspectFit" />
+
+            <!-- Activity + resultado en una fila -->
+            <HorizontalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                <ActivityIndicator x:Name="Busy" IsVisible="False" IsRunning="False" />
+                <Label x:Name="ResultLabel" FontSize="16" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <!-- Botón debajo, centrado -->
+            <Button x:Name="BtnClassifyAgain"
+              Text="Clasificar de nuevo"
+              Clicked="OnClassifyAgain"
+              HorizontalOptions="Center"
+              Margin="0,6,0,0"/>
         </VerticalStackLayout>
 
-        <!-- Lista de componentes (nombre, estado y descripción) -->
-        <CollectionView x:Name="ComponentesList" Margin="12">
+        <!-- 1: Lista agrupada por componente (CollectionView como scroll principal) -->
+        <CollectionView x:Name="GroupedList"
+                    Grid.Row="1"
+                    ItemsSource="{Binding ComponentGroups}"
+                    SelectionMode="None"
+                    Margin="0,6,0,0"
+                    EmptyView="No se encontraron componentes.">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <VerticalStackLayout Padding="8" Spacing="4">
-                        <Label Text="{Binding Nombre}" FontAttributes="Bold" FontSize="16" />
-                        <Label Text="{Binding Estado}" TextColor="Gray" FontSize="14" />
-                        <Label Text="{Binding Descripcion}" FontSize="13" LineBreakMode="TailTruncation" />
-                    </VerticalStackLayout>
+                    <Frame Padding="10" Margin="0,6,0,6" CornerRadius="8" BorderColor="#E0E0E0" HasShadow="False">
+                        <VerticalStackLayout Spacing="8">
+
+                            <!-- Datos del componente -->
+                            <Label Text="{Binding Component.Nombre}" FontAttributes="Bold" FontSize="18" />
+                            <Label Text="{Binding Component.Estado}" TextColor="Gray" FontSize="14" />
+                            <Label Text="{Binding Component.Descripcion}" FontSize="13" LineBreakMode="TailTruncation" />
+
+                            <!-- Subtítulo -->
+                            <Label Text="Lugares donde puedes reciclar:" FontAttributes="Italic" Margin="0,6,0,2" />
+
+                            <!-- Lista de empresas (sin scroll interno) -->
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Companies}" Spacing="6">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
+                                        <Frame Padding="8" HasShadow="False" BorderColor="#F0F0F0" CornerRadius="6">
+                                            <VerticalStackLayout Spacing="4">
+                                                <Label Text="{Binding Nombre}" FontAttributes="Bold" />
+
+                                                <!-- Teléfono: toca para copiar -->
+                                                <Label Text="{Binding Telefono}"
+                                                       IsVisible="{Binding Telefono, Converter={StaticResource NullToBool}}"
+                                                       TextColor="#007AFF"
+                                                       TextDecorations="Underline"
+                                                       LineBreakMode="TailTruncation">
+                                                    <Label.GestureRecognizers>
+                                                        <TapGestureRecognizer Tapped="OnPhoneTapped" NumberOfTapsRequired="1" />
+                                                    </Label.GestureRecognizers>
+                                                </Label>
+
+                                                <!-- Correo: toca para copiar -->
+                                                <Label Text="{Binding Email}"
+                                                       IsVisible="{Binding Email, Converter={StaticResource NullToBool}}"
+                                                       TextColor="#007AFF"
+                                                       TextDecorations="Underline"
+                                                       LineBreakMode="TailTruncation">
+                                                    <Label.GestureRecognizers>
+                                                        <TapGestureRecognizer Tapped="OnEmailTapped" NumberOfTapsRequired="1" />
+                                                    </Label.GestureRecognizers>
+                                                </Label>
+
+                                                <!-- Website: toca para abrir en navegador -->
+                                                <Label Text="{Binding Website}"
+                                                       IsVisible="{Binding Website, Converter={StaticResource NullToBool}}"
+                                                       TextColor="#007AFF"
+                                                       TextDecorations="Underline"
+                                                       LineBreakMode="TailTruncation">
+                                                    <Label.GestureRecognizers>
+                                                        <TapGestureRecognizer Tapped="OnWebsiteTapped" NumberOfTapsRequired="1" />
+                                                    </Label.GestureRecognizers>
+                                                </Label>
+
+                                                <Label Text="{Binding CoverageNotes}" FontSize="12" TextColor="Gray" LineBreakMode="TailTruncation" />
+                                            </VerticalStackLayout>
+                                        </Frame>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </VerticalStackLayout>
+
+    </Grid>
 </ContentPage>

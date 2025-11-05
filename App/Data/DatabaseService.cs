@@ -27,6 +27,7 @@ namespace App.Data
                 return false;
             }
         }
+
         public bool RegistrarUsuario(Usuario usuario)
         {
             try
@@ -54,7 +55,6 @@ namespace App.Data
             }
         }
 
-        
         public bool ValidarUsuario(string correo, string contrasena)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -68,6 +68,7 @@ namespace App.Data
                 return count > 0;
             }
         }
+
         public async Task<List<Usuario>> ObtenerUsuarios()
         {
             using (var connection = new SqlConnection(connectionString))
@@ -90,7 +91,6 @@ namespace App.Data
                         RegionUsuario = reader["RegionUsuario"] != DBNull.Value ? reader["RegionUsuario"].ToString()! : string.Empty,
                         ComunaUsuario = reader["ComunaUsuario"] != DBNull.Value ? reader["ComunaUsuario"].ToString()! : string.Empty,
                     });
-
                 }
                 return usuarios;
             }
@@ -148,13 +148,14 @@ namespace App.Data
                 return result != null ? result.ToString()! : string.Empty;
             }
         }
+
         public string ObtenerNombre(string correo)
         {
-            using (var connection = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                connection.Open();
+                conn.Open();
                 string query = "SELECT Nombre FROM Usuarios WHERE Correo = @Correo";
-                SqlCommand cmd = new SqlCommand(query, connection);
+                SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@Correo", correo);
 
                 var result = cmd.ExecuteScalar();
@@ -229,8 +230,309 @@ ORDER BY c.nombre_componente;";
 
             return lista;
         }
+
+        public async Task<int?> GetComponentIdByNameAsync(string componentName)
+        {
+            using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+            var sql = @"SELECT componente_id FROM componentes_catalogo WHERE nombre_componente = @n";
+            using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.AddWithValue("@n", componentName);
+            var o = await cmd.ExecuteScalarAsync();
+            return o == null ? null : (int?)Convert.ToInt32(o);
+        }
+
+        public async Task<List<CompanyPickup>> GetCompaniesForComponentAsync(
+            int componenteId, string? regionNombreCompleto, string? comunaNombre = null)
+        {
+            using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+
+            var sql = @"
+SELECT v.pickup_company_id, v.nombre, v.website, v.telefono, v.email, v.coverage_notes,
+       v.prioridad, v.notas, v.region_cobertura, v.comuna_cobertura,
+       v.componente_id, c.nombre_componente
+FROM v_empresas_por_componente v
+JOIN componentes_catalogo c ON c.componente_id = v.componente_id
+WHERE v.componente_id = @cid
+  AND (@region IS NULL 
+       OR v.region_cobertura IS NULL 
+       OR v.region_cobertura = @region)
+  AND (@comuna IS NULL 
+       OR v.comuna_cobertura IS NULL 
+       OR v.comuna_cobertura = @comuna)
+ORDER BY v.prioridad, v.nombre;";
+
+            using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.AddWithValue("@cid", componenteId);
+            cmd.Parameters.AddWithValue("@region", (object?)regionNombreCompleto ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@comuna", (object?)comunaNombre ?? DBNull.Value);
+
+            var list = new List<CompanyPickup>();
+            using var rd = await cmd.ExecuteReaderAsync();
+            while (await rd.ReadAsync())
+            {
+                list.Add(new CompanyPickup
+                {
+                    PickupCompanyId = rd.GetInt32(0),
+                    Nombre = rd.GetString(1),
+                    Website = rd.IsDBNull(2) ? null : rd.GetString(2),
+                    Telefono = rd.IsDBNull(3) ? null : rd.GetString(3),
+                    Email = rd.IsDBNull(4) ? null : rd.GetString(4),
+                    CoverageNotes = rd.IsDBNull(5) ? null : rd.GetString(5),
+                    Prioridad = rd.GetInt32(6),
+                    Notas = rd.IsDBNull(7) ? null : rd.GetString(7),
+                    RegionCobertura = rd.IsDBNull(8) ? null : rd.GetString(8),
+                    ComunaCobertura = rd.IsDBNull(9) ? null : rd.GetString(9),
+                    ComponenteId = rd.GetInt32(10),
+                    ComponenteNombre = rd.GetString(11)
+                });
+            }
+            return list;
+        }
+
+        public async Task<List<CompanyPickup>> GetCompaniesForComponentsAsync(
+            IEnumerable<int> componenteIds, string? regionNombreCompleto, string? comunaNombre = null)
+        {
+            var ids = componenteIds?.Distinct().ToArray() ?? Array.Empty<int>();
+            if (ids.Length == 0) return new();
+
+            using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+
+            var inParams = string.Join(",", ids.Select((_, i) => $"@p{i}"));
+            var sql = $@"
+SELECT v.pickup_company_id, v.nombre, v.website, v.telefono, v.email, v.coverage_notes,
+       v.prioridad, v.notas, v.region_cobertura, v.comuna_cobertura,
+       v.componente_id, c.nombre_componente
+FROM v_empresas_por_componente v
+JOIN componentes_catalogo c ON c.componente_id = v.componente_id
+WHERE v.componente_id IN ({inParams})
+  AND (@region IS NULL 
+       OR v.region_cobertura IS NULL 
+       OR v.region_cobertura = @region)
+  AND (@comuna IS NULL 
+       OR v.comuna_cobertura IS NULL 
+       OR v.comuna_cobertura = @comuna)
+ORDER BY v.componente_id, v.prioridad, v.nombre;";
+
+            using var cmd = new SqlCommand(sql, cn);
+            for (int i = 0; i < ids.Length; i++)
+                cmd.Parameters.AddWithValue($"@p{i}", ids[i]);
+            cmd.Parameters.AddWithValue("@region", (object?)regionNombreCompleto ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@comuna", (object?)comunaNombre ?? DBNull.Value);
+
+            var list = new List<CompanyPickup>();
+            using var rd = await cmd.ExecuteReaderAsync();
+            while (await rd.ReadAsync())
+            {
+                list.Add(new CompanyPickup
+                {
+                    PickupCompanyId = rd.GetInt32(0),
+                    Nombre = rd.GetString(1),
+                    Website = rd.IsDBNull(2) ? null : rd.GetString(2),
+                    Telefono = rd.IsDBNull(3) ? null : rd.GetString(3),
+                    Email = rd.IsDBNull(4) ? null : rd.GetString(4),
+                    CoverageNotes = rd.IsDBNull(5) ? null : rd.GetString(5),
+                    Prioridad = rd.GetInt32(6),
+                    Notas = rd.IsDBNull(7) ? null : rd.GetString(7),
+                    RegionCobertura = rd.IsDBNull(8) ? null : rd.GetString(8),
+                    ComunaCobertura = rd.IsDBNull(9) ? null : rd.GetString(9),
+                    ComponenteId = rd.GetInt32(10),
+                    ComponenteNombre = rd.GetString(11)
+                });
+            }
+            return list;
+        }
+
+        public async Task<int?> GetDeviceIdByLabelAsync(string deviceLabel)
+        {
+            await using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+
+            const string sql = @"SELECT dispositivo_id
+                                 FROM dispositivo_catalogo
+                                 WHERE nombre_dispositivo = @label";
+
+            await using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.Add(new SqlParameter("@label", SqlDbType.NVarChar, 80) { Value = deviceLabel });
+
+            var o = await cmd.ExecuteScalarAsync();
+            return o == null || o == DBNull.Value ? (int?)null : Convert.ToInt32(o);
+        }
+
+        public async Task<bool> UpdateDetectionImageUrlAsync(int detectionId, string newImageUrl)
+        {
+            await using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+
+            const string sql = @"
+                UPDATE dbo.detections
+                   SET image_url = @url
+                 WHERE detection_id = @id;";
+
+            await using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.Add(new SqlParameter("@url", SqlDbType.NVarChar, 400) { Value = newImageUrl });
+            cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = detectionId });
+
+            var rows = await cmd.ExecuteNonQueryAsync();
+            return rows > 0;
+        }
+
+        public async Task<int> InsertDetectionAsync(
+            int userId,
+            int dispositivoId,
+            string imageUrl,
+            string? status,
+            double? confidence)
+        {
+            await using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+
+            const string sql = @"
+        INSERT INTO dbo.detections
+            (user_id, dispositivo_id, image_url, detected_at, status, confidence_overall)
+        OUTPUT INSERTED.detection_id
+        VALUES
+            (@uid, @did, @url, SYSUTCDATETIME(), @status, @conf);";
+
+            await using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.Add(new SqlParameter("@uid", SqlDbType.Int) { Value = userId });
+            cmd.Parameters.Add(new SqlParameter("@did", SqlDbType.Int) { Value = dispositivoId });
+            cmd.Parameters.Add(new SqlParameter("@url", SqlDbType.NVarChar, 400) { Value = imageUrl });
+            cmd.Parameters.Add(new SqlParameter("@status", SqlDbType.NVarChar, 20) { Value = (object?)status ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@conf", SqlDbType.Decimal)
+            {
+                Precision = 5,
+                Scale = 4,
+                Value = (object?)confidence ?? DBNull.Value
+            });
+
+            var id = await cmd.ExecuteScalarAsync();
+            return Convert.ToInt32(id);
+        }
+
+        // Recupera detecciones de un usuario (ordenadas por fecha desc)
+        public async Task<List<DetectionInfo>> GetDetectionsByUserAsync(int userId)
+        {
+            var lista = new List<DetectionInfo>();
+
+            const string sql = @"
+SELECT d.detection_id, d.user_id, d.dispositivo_id, dc.nombre_dispositivo, d.image_url, d.detected_at, d.status, d.confidence_overall
+FROM dbo.detections d
+LEFT JOIN dbo.dispositivo_catalogo dc ON d.dispositivo_id = dc.dispositivo_id
+WHERE d.user_id = @uid
+ORDER BY d.detected_at DESC;";
+
+            try
+            {
+                using var cn = new SqlConnection(connectionString);
+                await cn.OpenAsync();
+
+                using var cmd = new SqlCommand(sql, cn);
+                cmd.Parameters.AddWithValue("@uid", userId);
+
+                using var rd = await cmd.ExecuteReaderAsync();
+                while (await rd.ReadAsync())
+                {
+                    var conf = rd.IsDBNull(rd.GetOrdinal("confidence_overall"))
+                        ? (double?)null
+                        : Convert.ToDouble(rd.GetDecimal(rd.GetOrdinal("confidence_overall")));
+
+                    lista.Add(new DetectionInfo
+                    {
+                        DetectionId = rd.GetInt32(rd.GetOrdinal("detection_id")),
+                        UserId = rd.GetInt32(rd.GetOrdinal("user_id")),
+                        DispositivoId = rd.GetInt32(rd.GetOrdinal("dispositivo_id")),
+                        DispositivoNombre = rd.IsDBNull(rd.GetOrdinal("nombre_dispositivo")) ? "" : rd.GetString(rd.GetOrdinal("nombre_dispositivo")),
+                        ImageUrl = rd.IsDBNull(rd.GetOrdinal("image_url")) ? "" : rd.GetString(rd.GetOrdinal("image_url")),
+                        DetectedAt = rd.GetDateTime(rd.GetOrdinal("detected_at")),
+                        Status = rd.IsDBNull(rd.GetOrdinal("status")) ? null : rd.GetString(rd.GetOrdinal("status")),
+                        Confidence = conf
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DB] Error GetDetectionsByUserAsync: {ex.Message}");
+            }
+
+            return lista;
+        }
+
+        // NUEVO: Recupera todas las detecciones (administrador)
+        public async Task<List<DetectionInfo>> GetAllDetectionsAsync()
+        {
+            var lista = new List<DetectionInfo>();
+
+            const string sql = @"
+SELECT d.detection_id, d.user_id, ISNULL(u.Nombre, '') AS usuario_nombre, d.dispositivo_id, dc.nombre_dispositivo, d.image_url, d.detected_at, d.status, d.confidence_overall
+FROM dbo.detections d
+LEFT JOIN dbo.dispositivo_catalogo dc ON d.dispositivo_id = dc.dispositivo_id
+LEFT JOIN dbo.Usuarios u ON d.user_id = u.Id
+ORDER BY d.detected_at DESC;";
+
+            try
+            {
+                using var cn = new SqlConnection(connectionString);
+                await cn.OpenAsync();
+
+                using var cmd = new SqlCommand(sql, cn);
+
+                using var rd = await cmd.ExecuteReaderAsync();
+                while (await rd.ReadAsync())
+                {
+                    var conf = rd.IsDBNull(rd.GetOrdinal("confidence_overall"))
+                        ? (double?)null
+                        : Convert.ToDouble(rd.GetDecimal(rd.GetOrdinal("confidence_overall")));
+
+                    lista.Add(new DetectionInfo
+                    {
+                        DetectionId = rd.GetInt32(rd.GetOrdinal("detection_id")),
+                        UserId = rd.GetInt32(rd.GetOrdinal("user_id")),
+                        UsuarioNombre = rd.IsDBNull(rd.GetOrdinal("usuario_nombre")) ? "" : rd.GetString(rd.GetOrdinal("usuario_nombre")),
+                        DispositivoId = rd.GetInt32(rd.GetOrdinal("dispositivo_id")),
+                        DispositivoNombre = rd.IsDBNull(rd.GetOrdinal("nombre_dispositivo")) ? "" : rd.GetString(rd.GetOrdinal("nombre_dispositivo")),
+                        ImageUrl = rd.IsDBNull(rd.GetOrdinal("image_url")) ? "" : rd.GetString(rd.GetOrdinal("image_url")),
+                        DetectedAt = rd.GetDateTime(rd.GetOrdinal("detected_at")),
+                        Status = rd.IsDBNull(rd.GetOrdinal("status")) ? null : rd.GetString(rd.GetOrdinal("status")),
+                        Confidence = conf
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DB] Error GetAllDetectionsAsync: {ex.Message}");
+            }
+
+            return lista;
+        }
+
+        // Elimina una detección por id
+        public async Task<bool> DeleteDetectionAsync(int detectionId)
+        {
+            try
+            {
+                await using var cn = new SqlConnection(connectionString);
+                await cn.OpenAsync();
+
+                const string sql = @"DELETE FROM dbo.detections WHERE detection_id = @id;";
+                await using var cmd = new SqlCommand(sql, cn);
+                cmd.Parameters.AddWithValue("@id", detectionId);
+
+                var rows = await cmd.ExecuteNonQueryAsync();
+                return rows > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DB] Error DeleteDetectionAsync: {ex.Message}");
+                return false;
+            }
+        }
     }
 }
+
+
 
 
 

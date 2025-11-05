@@ -32,7 +32,12 @@ namespace App
 
             builder.Services.AddTransient<CameraResultPage>();
 
+            builder.Services.AddTransient<ComponentesPage>();
+
             builder.Services.AddSingleton<DatabaseService>();
+
+            builder.Services.AddSingleton<BlobStorageService>();
+
 
 
             return builder.Build();

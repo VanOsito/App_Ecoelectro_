@@ -94,6 +94,18 @@
                              VerticalOptions="End"
                              BackgroundColor="#F9F9FB">
 
+            <!-- NUEVO: botón visible solo para admin -->
+            <Button x:Name="btnGestionDetecciones"
+                    Text="Gestionar Detecciones"
+                    HeightRequest="48"
+                    BackgroundColor="#7F4A9B"
+                    TextColor="White"
+                    FontSize="15"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    Clicked="gestionDetecciones"
+                    IsVisible="False" />
+
             <Button x:Name="btnGestionUsuarios"
                     Text="Gestionar Usuarios"
                     HeightRequest="48"

@@ -1,5 +1,6 @@
 using App.Data;
 using App.Models;
+using App.Services;
 using Microsoft.Maui.Controls;  
 using System;
 using static App.Models.RegionChile;
@@ -32,14 +33,15 @@ public partial class PerfilPage : ContentPage
         {
             CargarDatosUsuario();
 
-            if (App.UsuarioEnSesion.Correo == "admin@admin.com")
-                btnGestionUsuarios.IsVisible = true;
-            else
-                btnGestionUsuarios.IsVisible = false;
+            var esAdmin = App.UsuarioEnSesion.Correo == "admin@admin.com";
+
+            btnGestionUsuarios.IsVisible = esAdmin;
+            btnGestionDetecciones.IsVisible = esAdmin;
         }
         else
         {
             btnGestionUsuarios.IsVisible = false;
+            btnGestionDetecciones.IsVisible = false;
         }
     }
 
@@ -66,13 +68,16 @@ public partial class PerfilPage : ContentPage
             Application.Current.MainPage = new NavigationPage(new LoginPage());
         }
     }
+
     private async void gestion(object sender, EventArgs e)
     {
-
         await Navigation.PushAsync(new GestionUsuariosPage());
-
-
     }
-    
 
+    // Nuevo: navegar a ComponentesPage (lista de detecciones)
+    private async void gestionDetecciones(object sender, EventArgs e)
+    {
+        // Reutiliza el servicio de BD que ya tienes; crea un BlobStorageService para pasar al constructor
+        await Navigation.PushAsync(new ComponentesPage(_dbService, new BlobStorageService()));
+    }
 }
