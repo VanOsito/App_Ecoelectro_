@@ -18,7 +18,7 @@ namespace App.Data
                 using (var connection = new SqlConnection(connectionString))
                 {
                     await connection.OpenAsync();
-                    return true; 
+                    return true;
                 }
             }
             catch (Exception ex)
@@ -35,17 +35,34 @@ namespace App.Data
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
+
+                    // 1️⃣ Registrar el nuevo usuario y obtener su ID
                     string query = @"INSERT INTO Usuarios 
-                                    (Nombre, Correo, Contraseña, RegionUsuario, ComunaUsuario) 
-                                    VALUES (@Nombre, @Correo, @Contraseña, @RegionUsuario, @ComunaUsuario)";
+                    (Nombre, Correo, Contraseña, RegionUsuario, ComunaUsuario, IdRol) 
+                    OUTPUT INSERTED.Id
+                    VALUES (@Nombre, @Correo, @Contraseña, @RegionUsuario, @ComunaUsuario, @IdRol)";
+
                     SqlCommand cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@Nombre", usuario.Nombre);
                     cmd.Parameters.AddWithValue("@Correo", usuario.Correo);
                     cmd.Parameters.AddWithValue("@Contraseña", usuario.Contraseña);
                     cmd.Parameters.AddWithValue("@RegionUsuario", usuario.RegionUsuario);
                     cmd.Parameters.AddWithValue("@ComunaUsuario", usuario.ComunaUsuario);
-                    cmd.ExecuteNonQuery();
+                    cmd.Parameters.AddWithValue("@IdRol", 2);
+
+                    int nuevoUsuarioId = (int)cmd.ExecuteScalar();
+
+                    // 2️⃣ Insertar los puntos de bienvenida
+                    string puntosQuery = @"INSERT INTO Puntos (UsuarioId, Cantidad, Tipo, Descripcion)
+                           VALUES (@UsuarioId, @Cantidad, @Tipo, @Descripcion)";
+                    SqlCommand puntosCmd = new SqlCommand(puntosQuery, conn);
+                    puntosCmd.Parameters.AddWithValue("@UsuarioId", nuevoUsuarioId);
+                    puntosCmd.Parameters.AddWithValue("@Cantidad", 100);
+                    puntosCmd.Parameters.AddWithValue("@Tipo", "Asignación");
+                    puntosCmd.Parameters.AddWithValue("@Descripcion", "Puntos de bienvenida por registro");
+                    puntosCmd.ExecuteNonQuery();
                 }
+
                 return true;
             }
             catch (Exception ex)
@@ -55,17 +72,45 @@ namespace App.Data
             }
         }
 
+
         public bool ValidarUsuario(string correo, string contrasena)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                string query = "SELECT COUNT(*) FROM Usuarios WHERE Correo = @Correo AND Contraseña = @Contraseña";
+
+                string query = "SELECT Id, IdRol FROM Usuarios WHERE Correo = @Correo AND Contraseña = @Contraseña";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@Correo", correo);
                 cmd.Parameters.AddWithValue("@Contraseña", contrasena);
-                int count = (int)cmd.ExecuteScalar();
-                return count > 0;
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        int idUsuario = Convert.ToInt32(reader["Id"]);
+                        int idRol = reader["IdRol"] == DBNull.Value ? 0 : Convert.ToInt32(reader["IdRol"]);
+
+                        reader.Close();
+
+                        if (idRol == 1)
+                            return true;
+
+                        if (idRol == 0)
+                        {
+                            string updateQuery = "UPDATE Usuarios SET IdRol = 2 WHERE Id = @Id";
+                            SqlCommand updateCmd = new SqlCommand(updateQuery, conn);
+                            updateCmd.Parameters.AddWithValue("@Id", idUsuario);
+                            updateCmd.ExecuteNonQuery();
+                        }
+
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
             }
         }
 
@@ -74,7 +119,7 @@ namespace App.Data
             using (var connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync();
-                var query = "SELECT * FROM Usuarios"; 
+                var query = "SELECT * FROM Usuarios";
                 var command = new SqlCommand(query, connection);
 
                 var reader = await command.ExecuteReaderAsync();
@@ -527,6 +572,171 @@ ORDER BY d.detected_at DESC;";
             {
                 Console.WriteLine($"[DB] Error DeleteDetectionAsync: {ex.Message}");
                 return false;
+            }
+        }
+        // -------------------------------
+        // SISTEMA DE PUNTOS
+        // -------------------------------
+        public async Task<bool> RegistrarPuntosAsync(Punto punto)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var query = @"INSERT INTO Puntos (UsuarioId, Cantidad, Tipo, Descripcion, Fecha)
+                          VALUES (@UsuarioId, @Cantidad, @Tipo, @Descripcion, @Fecha)";
+                    var command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@UsuarioId", punto.UsuarioId);
+                    command.Parameters.AddWithValue("@Cantidad", punto.Cantidad);
+                    command.Parameters.AddWithValue("@Tipo", punto.Tipo);
+                    command.Parameters.AddWithValue("@Descripcion", punto.Descripcion ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@Fecha", punto.Fecha);
+
+                    await command.ExecuteNonQueryAsync();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al registrar puntos: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<List<Punto>> ObtenerHistorialPuntosAsync(int usuarioId)
+        {
+            var lista = new List<Punto>();
+
+            try
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var query = @"SELECT * FROM Puntos WHERE UsuarioId = @UsuarioId ORDER BY Fecha DESC";
+                    var command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@UsuarioId", usuarioId);
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            lista.Add(new Punto
+                            {
+                                Id = (int)reader["Id"],
+                                UsuarioId = (int)reader["UsuarioId"],
+                                Cantidad = (int)reader["Cantidad"],
+                                Tipo = reader["Tipo"].ToString() ?? "",
+                                Descripcion = reader["Descripcion"].ToString() ?? "",
+                                Fecha = (DateTime)reader["Fecha"]
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener historial de puntos: {ex.Message}");
+            }
+
+            return lista;
+        }
+
+        public async Task<int> ObtenerTotalPuntosAsync(int usuarioId)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var query = "SELECT ISNULL(SUM(Cantidad), 0) FROM Puntos WHERE UsuarioId = @UsuarioId";
+                    var command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@UsuarioId", usuarioId);
+
+                    var total = await command.ExecuteScalarAsync();
+                    return Convert.ToInt32(total);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener total de puntos: {ex.Message}");
+                return 0;
+            }
+        }
+        public async Task AsignarPuntosPorDeteccionesAsync()
+        {
+            try
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                    INSERT INTO Puntos (UsuarioId, Cantidad, Tipo, Descripcion)
+                    SELECT 
+                        d.UsuarioId, 
+                        COUNT(d.Id) * 100 AS Cantidad, 
+                        'Asignación', 
+                        'Puntos otorgados por detecciones'
+                    FROM Detections d
+                    JOIN Usuarios u ON u.Id = d.UsuarioId
+                    WHERE NOT EXISTS (
+                        SELECT 1 
+                        FROM Puntos p 
+                        WHERE p.UsuarioId = d.UsuarioId 
+                        AND p.Descripcion LIKE '%detecciones%'
+                    )
+                    GROUP BY d.UsuarioId;";
+
+                    SqlCommand command = new SqlCommand(query, connection);
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                Console.WriteLine("Puntos asignados correctamente según detecciones.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al asignar puntos por detecciones: {ex.Message}");
+            }
+        }
+        public async Task AsignarPuntosPorDeteccionUsuarioAsync(int usuarioId)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                INSERT INTO Puntos (UsuarioId, Cantidad, Tipo, Descripcion)
+                VALUES (@UsuarioId, 100, 'Asignación', 'Puntos por nueva detección');
+            ";
+
+                    using var command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@UsuarioId", usuarioId);
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                Console.WriteLine($"Puntos asignados al usuario {usuarioId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al asignar puntos al usuario {usuarioId}: {ex.Message}");
+            }
+        }
+        public async Task<int> ObtenerIdUsuarioPorCorreoAsync(string correo)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                var query = "SELECT Id FROM Usuarios WHERE Correo = @Correo";
+                var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Correo", correo);
+                var result = await command.ExecuteScalarAsync();
+                return result == null ? 0 : Convert.ToInt32(result);
             }
         }
     }

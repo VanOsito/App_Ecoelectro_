@@ -1,83 +1,113 @@
 using App.Data;
 using App.Models;
 using App.Services;
-using Microsoft.Maui.Controls;  
+using Microsoft.Maui.Controls;
 using System;
 using static App.Models.RegionChile;
-namespace App.Views;
 
-public partial class PerfilPage : ContentPage
+namespace App.Views
 {
-    private readonly DatabaseService _dbService = new DatabaseService();
-    
-
-    public PerfilPage()
-	{
-		InitializeComponent();
-        //if (App.UsuarioActual != null)
-        //{
-        //    CargarDatosUsuario();
-        //}
-
-        //if (App.UsuarioActual == "admin@admin.com")
-        //    btnGestionUsuarios.IsVisible = true;
-        //else
-        //    btnGestionUsuarios.IsVisible = false;
-
-    }
-    protected override void OnAppearing()
+    public partial class PerfilPage : ContentPage
     {
-        base.OnAppearing();
+        private readonly DatabaseService _dbService = new DatabaseService();
 
-        if (App.UsuarioEnSesion != null)
+        public PerfilPage()
         {
+            InitializeComponent();
+            ConfigurarVisibilidadAdmin();
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
             CargarDatosUsuario();
-
-            var esAdmin = App.UsuarioEnSesion.Correo == "admin@admin.com";
-
-            btnGestionUsuarios.IsVisible = esAdmin;
-            btnGestionDetecciones.IsVisible = esAdmin;
         }
-        else
+
+        private void ConfigurarVisibilidadAdmin()
         {
-            btnGestionUsuarios.IsVisible = false;
-            btnGestionDetecciones.IsVisible = false;
+            btnGestionUsuarios.IsVisible = App.UsuarioActual == "admin@admin.com";
         }
-    }
 
-    private void CargarDatosUsuario()
-    {
-        var usuario = App.UsuarioEnSesion;
-        if (usuario == null)
-            return;
-
-        lblBienvenida.Text = $"Bienvenido, {usuario.Nombre}";
-        lblNombre.Text = $"Nombre: {usuario.Nombre}";
-        lblCorreo.Text = $"Correo: {usuario.Correo}";
-        lblRegion.Text = $"Región: {usuario.RegionUsuario}";
-        lblComuna.Text = $"Comuna: {usuario.ComunaUsuario}";
-    }
-
-
-    private async void cerrar(object sender, EventArgs e)
-    {
-        bool confirmar = await DisplayAlert("Cerrar sesión", "¿Deseas cerrar sesión?", "Sí", "No");
-        if (confirmar)
+        private async void CargarDatosUsuario()
         {
-            App.UsuarioEnSesion = null; // <--- Limpia la sesión
-            Application.Current.MainPage = new NavigationPage(new LoginPage());
+            try
+            {
+                Usuario usuario = App.UsuarioEnSesion;
+
+                // Si no está en memoria, buscar en la base de datos
+                if (usuario == null && !string.IsNullOrEmpty(App.UsuarioActual))
+                {
+                    var usuarios = await _dbService.ObtenerUsuarios();
+                    usuario = usuarios.FirstOrDefault(u => u.Correo == App.UsuarioActual);
+
+                    if (usuario != null)
+                        App.UsuarioEnSesion = usuario; // Guarda en memoria
+                }
+
+                if (usuario == null)
+                {
+                    lblNombre.Text = "Nombre del Usuario";
+                    lblCorreo.Text = "correo@usuario.com";
+                    lblRegion.Text = "Región no disponible";
+                    lblComuna.Text = "Comuna no disponible";
+                    lblPuntos.Text = "0";
+                    return;
+                }
+
+                // Mostrar datos del usuario
+                lblNombre.Text = usuario.Nombre;
+                lblCorreo.Text = usuario.Correo;
+                lblRegion.Text = usuario.RegionUsuario ?? "No especificada";
+                lblComuna.Text = usuario.ComunaUsuario ?? "No especificada";
+
+                await CargarPuntosUsuario(usuario.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al cargar usuario: {ex.Message}");
+                await DisplayAlert("Error", "No se pudieron cargar los datos del usuario.", "OK");
+            }
         }
-    }
 
-    private async void gestion(object sender, EventArgs e)
-    {
-        await Navigation.PushAsync(new GestionUsuariosPage());
-    }
+        private async Task CargarPuntosUsuario(int usuarioId)
+        {
+            try
+            {
+                int totalPuntos = await _dbService.ObtenerTotalPuntosAsync(usuarioId);
+                lblPuntos.Text = totalPuntos.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al cargar puntos: {ex.Message}");
+                lblPuntos.Text = "0";
+            }
+        }
 
-    // Nuevo: navegar a ComponentesPage (lista de detecciones)
-    private async void gestionDetecciones(object sender, EventArgs e)
-    {
-        // Reutiliza el servicio de BD que ya tienes; crea un BlobStorageService para pasar al constructor
-        await Navigation.PushAsync(new ComponentesPage(_dbService, new BlobStorageService()));
+        private async void VerHistorial_Clicked(object sender, EventArgs e)
+        {
+            if (App.UsuarioEnSesion == null)
+            {
+                await DisplayAlert("Error", "No hay usuario en sesión.", "OK");
+                return;
+            }
+
+            await Navigation.PushAsync(new HistorialPuntos(App.UsuarioEnSesion.Id));
+        }
+
+        private async void cerrar(object sender, EventArgs e)
+        {
+            bool confirmar = await DisplayAlert("Cerrar sesión", "¿Deseas cerrar sesión?", "Sí", "No");
+            if (confirmar)
+            {
+                App.UsuarioActual = null;
+                App.UsuarioEnSesion = null;
+                Application.Current.MainPage = new NavigationPage(new LoginPage());
+            }
+        }
+
+        private async void gestion(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new GestionUsuariosPage());
+        }
     }
 }

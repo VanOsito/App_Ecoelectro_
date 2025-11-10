@@ -22,9 +22,9 @@ public partial class CameraResultPage : ContentPage
     private readonly DatabaseService _db;
     private readonly IImageClassifier _clf;
     private string? _photoPath;
-    
+
     private readonly BlobStorageService _blobStorage;
-    
+
 
     // Mantengo Empresas por compatibilidad aunque la UI use ComponentGroups
     public ObservableCollection<CompanyPickup> Empresas { get; } = new();
@@ -55,10 +55,10 @@ public partial class CameraResultPage : ContentPage
         BindingContext = this;
         _db = db;
         _blobStorage = blobStorage;
-        
 
-    // Asegura la fuente de datos (opcional, el binding XAML ya lo hace)
-    GroupedList.ItemsSource = ComponentGroups;
+
+        // Asegura la fuente de datos (opcional, el binding XAML ya lo hace)
+        GroupedList.ItemsSource = ComponentGroups;
     }
 
     private async Task LoadAndClassifyAsync()
@@ -84,7 +84,7 @@ public partial class CameraResultPage : ContentPage
 
             // Frase: “en la foto hay un <label>”
             ResultLabel.Text = $"En la foto hay un {label} ({prob:P1}).";
-            PredictedLabel = label;                  
+            PredictedLabel = label;
             PredictedConfidence = prob;
             OnPropertyChanged(nameof(PredictedLabel));
             OnPropertyChanged(nameof(PredictedConfidence));
@@ -120,6 +120,9 @@ public partial class CameraResultPage : ContentPage
                     status: status,
                     confidence: prob
                 );
+                //  Asignar puntos al usuario actual
+                await _db.AsignarPuntosPorDeteccionUsuarioAsync(user.Id);
+                await Toast.Make("Has ganado 100 puntos por tu detección.").Show();
 
                 // 4) (Opcional) borrar archivo local
                 try { File.Delete(_photoPath); } catch { /* no-op */ }
