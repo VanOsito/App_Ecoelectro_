@@ -1,4 +1,5 @@
 ﻿using App.Services;
+using App.ViewModels;
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
@@ -25,18 +26,21 @@ namespace App
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
-            // DI: nuestro servicio de inferencia (singleton)
+
+            // ✅ TUS SERVICIOS EXISTENTES (MANTENER):
             builder.Services.AddSingleton<IImageClassifier, OnnxImageClassifier>();
-
             builder.Services.AddTransient<CameraResultPage>();
-
             builder.Services.AddSingleton<DatabaseService>();
 
+            // ❌ COMENTA TEMPORALMENTE LO NUEVO:
+            // builder.Services.AddSingleton<IPuntoReciclajeService, PuntoReciclajeService>();
+            // builder.Services.AddTransient<GestionPuntosViewModel>();
+            // builder.Services.AddTransient<MapaViewModel>();
+            // builder.Services.AddTransient<GestionPuntosPage>();
 
             return builder.Build();
-
         }
     }
 }

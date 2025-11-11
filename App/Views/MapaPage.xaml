@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              xmlns:converters="clr-namespace:App.Converters"
+             xmlns:models="clr-namespace:App.Models"
              x:Class="App.Views.MapaPage"
              Title=""
              BackgroundColor="#F8F9FA">
@@ -14,7 +15,7 @@
           Padding="0"
           RowSpacing="0">
 
-        <!-- Header Elegante Mejorado y Más Compacto -->
+        <!-- Header Elegante  -->
         <Border Grid.Row="0"
                 BackgroundColor="#FFFFFF"
                 Stroke="#E0E0E0"
@@ -83,15 +84,6 @@
                         <Grid ColumnDefinitions="Auto,*" 
                               VerticalOptions="Center"
                               ColumnSpacing="4">
-
-                            <!-- Icono -->
-                            <Label Grid.Column="0"
-                                   Text=""
-                                   FontSize="11"
-                                   TextColor="#FFFFFF"
-                                   VerticalOptions="Center" />
-
-                            <!-- Texto -->
                             <Label Grid.Column="1"
                                    Text="10 km"
                                    x:Name="LblRangoActual"
@@ -120,15 +112,6 @@
                         <Grid ColumnDefinitions="Auto,*,Auto" 
                               VerticalOptions="Center"
                               ColumnSpacing="4">
-
-                            <!-- Icono -->
-                            <Label Grid.Column="0"
-                                   Text=""
-                                   FontSize="11"
-                                   TextColor="#FFFFFF"
-                                   VerticalOptions="Center" />
-
-                            <!-- Texto -->
                             <Label Grid.Column="1"
                                    Text="Filtrar"
                                    FontSize="11"
@@ -137,8 +120,6 @@
                                    VerticalOptions="Center"
                                    HorizontalOptions="Center"
                                    LineBreakMode="NoWrap" />
-
-                            <!-- Flecha -->
                             <Label Grid.Column="2"
                                    Text="⌄"
                                    FontSize="11"
@@ -161,7 +142,124 @@
                   MapType="Street"
                   VerticalOptions="Fill" />
 
-        <!-- Footer Mejorado -->
+        <!-- Panel de gestión con Border -->
+        <Border x:Name="PanelGestion"
+               Grid.Row="1"
+               BackgroundColor="White"
+               Padding="15"
+               Margin="20"
+               HorizontalOptions="End"
+               VerticalOptions="Start"
+               IsVisible="False"
+               WidthRequest="320"
+               HeightRequest="500"
+               Stroke="Transparent">
+
+            <Border.Shadow>
+                <Shadow Brush="#000000"
+                        Offset="0,4"
+                        Opacity="0.1"
+                        Radius="8"/>
+            </Border.Shadow>
+
+            <ScrollView>
+                <StackLayout Spacing="12">
+
+                    <!-- Header del panel -->
+                    <Label Text="🎯 Gestión de Puntos" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="#2D3748"
+                           HorizontalOptions="Center"/>
+
+                    <!-- Búsqueda -->
+                    <Border BackgroundColor="#F7FAFC" Padding="10" Stroke="Transparent">
+                        <StackLayout>
+                            <Label Text="🔍 Buscar puntos:" FontSize="12" TextColor="#4A5568" FontAttributes="Bold"/>
+                            <Entry x:Name="TxtBusquedaGestion"
+                                   Placeholder="Nombre, comuna, residuo..."
+                                   TextChanged="OnBusquedaGestionChanged"/>
+                        </StackLayout>
+                    </Border>
+
+                    <!-- Lista de puntos para gestión -->
+                    <CollectionView x:Name="ListaGestionPuntos"
+                                    HeightRequest="220">
+                        <CollectionView.EmptyView>
+                            <Label Text="No hay puntos para gestionar" 
+                                   HorizontalOptions="Center" 
+                                   TextColor="Gray"
+                                   Margin="20"/>
+                        </CollectionView.EmptyView>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:PuntoReciclaje">
+                                <Grid Padding="8" ColumnDefinitions="*,Auto" BackgroundColor="#F8F9FA" Margin="0,2">
+                                    <StackLayout>
+                                        <Label Text="{Binding Nombre}" 
+                                               FontAttributes="Bold" 
+                                               FontSize="14"
+                                               TextColor="#2D3748"/>
+                                        <Label Text="{Binding Direccion}" 
+                                               FontSize="11" 
+                                               TextColor="#4A5568"/>
+                                        <Label Text="{Binding Comuna}" 
+                                               FontSize="10" 
+                                               TextColor="#718096"/>
+                                    </StackLayout>
+
+                                    <StackLayout Grid.Column="1" 
+                                                 Orientation="Horizontal" 
+                                                 Spacing="4"
+                                                 VerticalOptions="Center">
+                                        <Button Text="🗑️" 
+                                                BackgroundColor="Transparent"
+                                                TextColor="#E53E3E"
+                                                Clicked="OnEliminarPuntoClicked"
+                                                CommandParameter="{Binding .}"
+                                                HeightRequest="28"
+                                                WidthRequest="28"
+                                                FontSize="10"/>
+                                        <Button Text="✏️" 
+                                                BackgroundColor="Transparent"
+                                                TextColor="#805AD5"
+                                                Clicked="OnEditarPuntoClicked"
+                                                CommandParameter="{Binding .}"
+                                                HeightRequest="28"
+                                                WidthRequest="28"
+                                                FontSize="10"/>
+                                    </StackLayout>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <!-- Botones de acción -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Grid.Column="0"
+                                Text="➕ Agregar"
+                                BackgroundColor="#38A169"
+                                TextColor="White"
+                                CornerRadius="8"
+                                Clicked="OnAgregarPuntoClicked"
+                                FontSize="12"
+                                HeightRequest="36"/>
+
+                        <Button Grid.Column="1"
+                                Text="❌ Cerrar"
+                                BackgroundColor="#E53E3E"
+                                TextColor="White"
+                                CornerRadius="8"
+                                Clicked="OnCerrarPanelClicked"
+                                FontSize="12"
+                                HeightRequest="36"/>
+                    </Grid>
+
+                </StackLayout>
+            </ScrollView>
+        </Border>
+
+        <!-- Footer ACTUALIZADO - Con botón de filtro funcional -->
         <Border Grid.Row="2"
                 BackgroundColor="#FFFFFF"
                 Stroke="#E0E0E0"
@@ -176,24 +274,78 @@
                         Radius="4"/>
             </Border.Shadow>
 
-            <Grid ColumnDefinitions="*,Auto" 
+            <Grid ColumnDefinitions="*,Auto,Auto" 
                   ColumnSpacing="12">
 
-                <VerticalStackLayout Grid.Column="0"
-                                   VerticalOptions="Center"
-                                   Spacing="3">
-                    <Label x:Name="LblFiltroActual"
-                           Text="Mostrando: Todos los dispositivos"
-                           FontSize="12"
-                           TextColor="#4A5568"
-                           FontAttributes="Bold" />
-                    <Label x:Name="LblInfo"
-                           Text="Cargando puntos de reciclaje..."
-                           FontSize="10"
-                           TextColor="#83AD6C" />
-                </VerticalStackLayout>
+                <!-- ✅ NUEVO: Botón de filtro clickeable -->
+                <Border Grid.Column="0"
+                        BackgroundColor="Transparent"
+                        StrokeThickness="0"
+                        Padding="0"
+                        HorizontalOptions="Start"
+                        VerticalOptions="Center">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnFiltroFooterClicked"/>
+                    </Border.GestureRecognizers>
 
+                    <Grid ColumnDefinitions="Auto,*" 
+                          VerticalOptions="Center"
+                          ColumnSpacing="8">
+                        <Label Grid.Column="0"
+                               Text="🔽"
+                               FontSize="14"
+                               TextColor="#7F4A9B"
+                               VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1"
+                                           VerticalOptions="Center"
+                                           Spacing="3">
+                            <Label x:Name="LblFiltroActual"
+                                   Text="Todos los dispositivos"
+                                   FontSize="12"
+                                   TextColor="#7F4A9B"
+                                   FontAttributes="Bold" />
+                            <Label x:Name="LblInfo"
+                                   Text="Cargando puntos de reciclaje..."
+                                   FontSize="10"
+                                   TextColor="#83AD6C" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Botón de gestión CRUD -->
                 <Border Grid.Column="1"
+                        BackgroundColor="#7F4A9B"
+                        StrokeThickness="0"
+                        Padding="12,8"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        HeightRequest="36">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnGestionFlotanteClicked"/>
+                    </Border.GestureRecognizers>
+
+                    <Grid ColumnDefinitions="Auto,Auto" 
+                          VerticalOptions="Center"
+                          ColumnSpacing="6">
+                        <Label Grid.Column="0"
+                               Text="⚙️"
+                               FontSize="12"
+                               TextColor="#FFFFFF"
+                               VerticalOptions="Center" />
+                        <Label Grid.Column="1"
+                               Text="Gestionar"
+                               FontSize="11"
+                               TextColor="#FFFFFF"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Botón de actualizar ubicación (se mantiene) -->
+                <Border Grid.Column="2"
                         BackgroundColor="#7F4A9B"
                         StrokeThickness="0"
                         WidthRequest="40"
