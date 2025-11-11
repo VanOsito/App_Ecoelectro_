@@ -1,34 +1,121 @@
-namespace App.Views;
+using App.Data;
+using App.Models;
+using Microsoft.Maui.Controls;
 using System;
-using System.Diagnostics;
-using System.IO;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
-using Utils;
-
-public partial class InicioPage : ContentPage
+namespace App.Views
 {
-	public InicioPage()
-	{
-		InitializeComponent();
-	}
-
-    // -- ON APPEARING --
-    protected override void OnAppearing()
+    public partial class InicioPage : ContentPage
     {
-        base.OnAppearing();
+        private readonly DatabaseService _dbService = new DatabaseService();
+        private ObservableCollection<ContenidoEducativo> _contenidoList = new();
 
-        // Mostrar la última foto si existe
-        if (!string.IsNullOrWhiteSpace(PhotoStore.LastPhotoPath) && File.Exists(PhotoStore.LastPhotoPath))
+        public bool EsAdmin { get; set; }
+        public ICommand EliminarCommand { get; }
+
+        public InicioPage()
         {
-            LastPhoto.Source = ImageSource.FromFile(PhotoStore.LastPhotoPath);
+            InitializeComponent();
+
+            lblNombreUsuario.Text = App.Usuarionombre ?? "Usuario";
+
+            EsAdmin = App.UsuarioActual == "admin@admin.com";
+            frmAgregar.IsVisible = EsAdmin;
+
+            EliminarCommand = new Command<ContenidoEducativo>(async (item) => await EliminarContenido(item));
+
+            contenidoList.ItemsSource = _contenidoList;
+            BindingContext = this;
+
+            CargarContenido();
+        }
+
+        private async void CargarContenido()
+        {
+            var contenido = await _dbService.ObtenerContenidoEducativoAsync();
+            _contenidoList.Clear();
+
+            foreach (var item in contenido)
+            {
+                item.TieneImagen = !string.IsNullOrEmpty(item.ImagenUrl);
+                _contenidoList.Add(item);
+            }
+        }
+
+        private async void OnAgregarImagenClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var result = await MediaPicker.PickPhotoAsync();
+                if (result != null)
+                {
+                    imgPreview.Source = result.FullPath;
+                    imgPreview.IsVisible = true;
+                    imgPreview.BindingContext = result.FullPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"No se pudo cargar la imagen: {ex.Message}", "OK");
+            }
+        }
+
+        private async void OnPublicarClicked(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtTitulo.Text) || string.IsNullOrWhiteSpace(txtDescripcion.Text))
+            {
+                await DisplayAlert("Error", "Completa todos los campos antes de publicar.", "OK");
+                return;
+            }
+
+            var nuevoContenido = new ContenidoEducativo
+            {
+                Titulo = txtTitulo.Text,
+                Descripcion = txtDescripcion.Text,
+                ImagenUrl = imgPreview.IsVisible ? imgPreview.BindingContext?.ToString() : null,
+                FechaPublicacion = DateTime.Now,
+                EsPredeterminado = false
+            };
+
+            await _dbService.InsertarContenidoEducativoAsync(nuevoContenido);
+
+            txtTitulo.Text = string.Empty;
+            txtDescripcion.Text = string.Empty;
+            imgPreview.IsVisible = false;
+
+            await DisplayAlert("Éxito", "Publicación agregada correctamente.", "OK");
+            CargarContenido();
+        }
+
+        private async void OnTakePhotoClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var photo = await MediaPicker.CapturePhotoAsync();
+                if (photo != null)
+                {
+                    imgUltimaFoto.Source = photo.FullPath;
+                    imgUltimaFoto.IsVisible = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"No se pudo tomar la foto: {ex.Message}", "OK");
+            }
+        }
+
+        private async Task EliminarContenido(ContenidoEducativo contenido)
+        {
+            bool confirmar = await DisplayAlert("Eliminar", $"¿Deseas eliminar \"{contenido.Titulo}\"?", "Sí", "No");
+            if (!confirmar)
+                return;
+
+            await _dbService.EliminarContenidoEducativoAsync(contenido.Id);
+            await DisplayAlert("Eliminado", "La publicación fue eliminada.", "OK");
+            CargarContenido();
         }
     }
-
-    // -- TOMAR FOTO --
-    private async void OnTakePhoto(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync(nameof(CameraPage));
-    }
-
-
 }
+

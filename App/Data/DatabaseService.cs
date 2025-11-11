@@ -739,6 +739,74 @@ ORDER BY d.detected_at DESC;";
                 return result == null ? 0 : Convert.ToInt32(result);
             }
         }
+
+        //Contenido Educativo
+
+        public async Task<List<ContenidoEducativo>> ObtenerContenidoEducativoAsync()
+        {
+            var contenido = new List<ContenidoEducativo>();
+
+            using (var conn = new SqlConnection(connectionString))
+            {
+                await conn.OpenAsync();
+                string query = "SELECT Id, Titulo, Descripcion, ImagenUrl, FechaPublicacion, EsPredeterminado FROM ContenidoEducativo ORDER BY FechaPublicacion DESC";
+                using (var cmd = new SqlCommand(query, conn))
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        contenido.Add(new ContenidoEducativo
+                        {
+                            Id = reader.GetInt32(0),
+                            Titulo = reader.GetString(1),
+                            Descripcion = reader.GetString(2),
+                            ImagenUrl = reader.IsDBNull(3) ? null : reader.GetString(3),
+                            FechaPublicacion = reader.GetDateTime(4),
+                            EsPredeterminado = reader.GetBoolean(5)
+                        });
+                    }
+                }
+            }
+            return contenido;
+        }
+
+        // Insertar publicación
+        public async Task InsertarContenidoEducativoAsync(ContenidoEducativo contenido)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                await conn.OpenAsync();
+                string query = "INSERT INTO ContenidoEducativo (Titulo, Descripcion, ImagenUrl, FechaPublicacion, EsPredeterminado) " +
+                               "VALUES (@Titulo, @Descripcion, @ImagenUrl, @FechaPublicacion, @EsPredeterminado)";
+                using (var cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Titulo", contenido.Titulo);
+                    cmd.Parameters.AddWithValue("@Descripcion", contenido.Descripcion);
+                    cmd.Parameters.AddWithValue("@ImagenUrl", (object)contenido.ImagenUrl ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@FechaPublicacion", contenido.FechaPublicacion);
+                    cmd.Parameters.AddWithValue("@EsPredeterminado", contenido.EsPredeterminado);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+        }
+        // ELIMINAR CONTENIDO EDUCATIVO
+        public async Task EliminarContenidoEducativoAsync(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                await conn.OpenAsync();
+                string query = "DELETE FROM ContenidoEducativo WHERE Id = @Id";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", id);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+
+
+
     }
 }
 

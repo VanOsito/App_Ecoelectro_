@@ -69,19 +69,19 @@ namespace App.Views
             }
         }
 
-        private async Task CargarPuntosUsuario(int usuarioId)
-        {
-            try
-            {
-                int totalPuntos = await _dbService.ObtenerTotalPuntosAsync(usuarioId);
-                lblPuntos.Text = totalPuntos.ToString();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al cargar puntos: {ex.Message}");
-                lblPuntos.Text = "0";
-            }
-        }
+        //private async Task CargarPuntosUsuario(int usuarioId)
+        //{
+        //    try
+        //    {
+        //        int totalPuntos = await _dbService.ObtenerTotalPuntosAsync(usuarioId);
+        //        lblPuntos.Text = totalPuntos.ToString();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error al cargar puntos: {ex.Message}");
+        //        lblPuntos.Text = "0";
+        //    }
+        //}
 
         private async void VerHistorial_Clicked(object sender, EventArgs e)
         {
@@ -104,7 +104,58 @@ namespace App.Views
                 Application.Current.MainPage = new NavigationPage(new LoginPage());
             }
         }
+        private string ObtenerNivelUsuario(int puntos)
+        {
+            if (puntos < 1000)
+            {
+                imgMascota.Source = "conejo_bronce.png";
+                return "Bronce";
+            }
+            else if (puntos < 5000)
+            {
+                imgMascota.Source = "conejo_platino.png";
+                return "Plata";
+            }
+            else
+            {
+                imgMascota.Source = "conejo_golden.png";
+                return "Gold";
+            }
+        }
 
+
+        private async Task CargarPuntosUsuario(int usuarioId)
+        {
+            try
+            {
+                int totalPuntos = await _dbService.ObtenerTotalPuntosAsync(usuarioId);
+                lblPuntos.Text = totalPuntos.ToString();
+
+                string nivel = ObtenerNivelUsuario(totalPuntos);
+                lblNivel.Text = $"Nivel: {nivel}";
+
+                
+                switch (nivel)
+                {
+                    case "Bronce":
+                        imgMascota.Source = "conejo_bronce.png";
+                        break;
+                    case "Plata":
+                        imgMascota.Source = "conejo_platino.png";
+                        break;
+                    case "Oro":
+                        imgMascota.Source = "conejo_golden.png";
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al cargar puntos: {ex.Message}");
+                lblPuntos.Text = "0";
+                lblNivel.Text = "Nivel: Bronce";
+                imgMascota.Source = "conejo_bronce.png";
+            }
+        }
         private async void gestion(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new GestionUsuariosPage());
