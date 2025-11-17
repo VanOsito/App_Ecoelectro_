@@ -85,7 +85,7 @@
                    HasShadow="True"
                    Padding="20">
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="📍 Información personal"
+                    <Label Text="Información personal"
                            FontSize="17"
                            FontAttributes="Bold"
                            TextColor="#7F4A9B" />
