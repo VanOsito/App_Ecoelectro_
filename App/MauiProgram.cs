@@ -32,8 +32,15 @@ namespace App
 
             builder.Services.AddTransient<CameraResultPage>();
 
+            builder.Services.AddTransient<ComponentesPage>();
+
             builder.Services.AddSingleton<DatabaseService>();
 
+            builder.Services.AddSingleton<BlobStorageService>();
+
+            builder.Services.AddTransient<GestionCompaniasPage>();
+
+            builder.Services.AddSingleton<IRegionComunaService, RegionComunaService>();
 
             return builder.Build();
 

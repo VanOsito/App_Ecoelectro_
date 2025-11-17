@@ -2,22 +2,100 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App.Views.CameraPage"
-             BackgroundColor="#F5F5F5">
-    
-        <VerticalStackLayout Padding="24" Spacing="18">
-            <Label Text="📷 Instrucciones para capturar tu dispositivo"
-               FontSize="20"
-               FontAttributes="Bold"
-               HorizontalOptions="Center" />
-            <Label Text="1. Coloca tu dispositivo electrónico sobre una superficie plana y sin ruido visual."
-               FontSize="16" />
-            <Label Text="2. Asegúrate de tener buena iluminación."
-               FontSize="16" />
-            <Label Text="3. Captura una imagen clara para una identificación precisa."
-               FontSize="16" />
-            <Button Text="Tomar foto" BackgroundColor="#7F4A9B" Clicked="OnTakePhotoClicked"/>
-            <Button Text="Seleccionar de galería" BackgroundColor="#83AD6C" Clicked="OnPickPhotoClicked"/>
-            <Button Text="Cancelar" BackgroundColor="#DCCAE6" Clicked="OnCancel"/>
+             Title=""
+             BackgroundColor="#DCCAE6">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30,30,30,40" Spacing="25" HorizontalOptions="Center" VerticalOptions="Center">
+
+            <!-- Encabezado -->
+            <Frame BackgroundColor="#7F4A9B"
+                   CornerRadius="25"
+                   Padding="28,22"
+                   HasShadow="True"
+                   WidthRequest="340">
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="6">
+                    <Label Text="Captura tu dispositivo"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center" />
+                    <Label Text="Sigue las instrucciones para una foto clara y válida"
+                           FontSize="14"
+                           TextColor="#F3EDF7"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Imagen ilustrativa -->
+            <Image Source="illustration.png"
+                   HeightRequest="180"
+                   Aspect="AspectFit"
+                   Margin="0,0,0,10"
+                   HorizontalOptions="Center"/>
+
+            <!-- Instrucciones -->
+            <Frame BackgroundColor="White"
+                   CornerRadius="20"
+                   Padding="22"
+                   HasShadow="True"
+                   BorderColor="#C993E6"
+                   WidthRequest="340">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Instrucciones"
+                           FontAttributes="Bold"
+                           FontSize="18"
+                           TextColor="#7F4A9B"
+                           HorizontalOptions="Center" />
+
+                    <Label Text="1. Coloca tu dispositivo sobre una superficie plana."
+                           FontSize="14"
+                           TextColor="#333" />
+
+                    <Label Text="2. Asegúrate de tener buena iluminación."
+                           FontSize="14"
+                           TextColor="#333" />
+
+                    <Label Text="3. Captura una imagen clara y centrada del dispositivo."
+                           FontSize="14"
+                           TextColor="#333" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Botones principales -->
+            <VerticalStackLayout Spacing="15" HorizontalOptions="Center" WidthRequest="300">
+                <Button Text="Tomar foto"
+                        BackgroundColor="#7F4A9B"
+                        TextColor="White"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        CornerRadius="15"
+                        HeightRequest="54"
+                        Clicked="OnTakePhotoClicked"/>
+
+                <Button Text="Seleccionar de galería"
+                        BackgroundColor="#83AD6C"
+                        TextColor="White"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        CornerRadius="15"
+                        HeightRequest="54"
+                        Clicked="OnPickPhotoClicked"/>
+
+                <Button Text="Cancelar"
+                        BackgroundColor="Transparent"
+                        BorderColor="#7F4A9B"
+                        BorderWidth="2"
+                        TextColor="#7F4A9B"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        CornerRadius="15"
+                        HeightRequest="52"
+                        Clicked="OnCancel"/>
+            </VerticalStackLayout>
         </VerticalStackLayout>
-    
+    </ScrollView>
 </ContentPage>
+
+

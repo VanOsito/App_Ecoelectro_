@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App.Views.GestionPuntosPage"
+             Title="Gestión de Puntos"
+             BackgroundColor="#F8F9FA">
+
+    <ContentPage.Resources>
+        <Style TargetType="Label">
+            <Setter Property="TextColor" Value="#2D3748" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+
+        <Style TargetType="Button" x:Key="BotónVerde">
+            <Setter Property="BackgroundColor" Value="#38A169" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="HeightRequest" Value="44" />
+        </Style>
+
+        <Style TargetType="Button" x:Key="BotónMorado">
+            <Setter Property="BackgroundColor" Value="#7F4A9B" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="HeightRequest" Value="44" />
+        </Style>
+
+        <Style TargetType="Border">
+            <Setter Property="Stroke" Value="#E0E0E0" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="BackgroundColor" Value="White" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto" 
+          Padding="16"
+          RowSpacing="12">
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                BackgroundColor="White"
+                Stroke="Transparent"
+                Padding="16">
+
+            <Border.Shadow>
+                <Shadow Brush="#000000"
+                        Offset="0,2"
+                        Opacity="0.1"
+                        Radius="4"/>
+            </Border.Shadow>
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Gestión de Puntos de Reciclaje"
+                       FontSize="20"
+                       TextColor="#7F4A9B"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center" />
+
+                <Label Text="Administra y visualiza todos los puntos de reciclaje"
+                       FontSize="14"
+                       TextColor="#718096"
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Lista de Puntos -->
+        <Border Grid.Row="1"
+                BackgroundColor="White"
+                Stroke="Transparent"
+                Padding="0">
+
+            <Border.Shadow>
+                <Shadow Brush="#000000"
+                        Offset="0,2"
+                        Opacity="0.1"
+                        Radius="4"/>
+            </Border.Shadow>
+
+            <CollectionView x:Name="ItemsCollectionView"
+                            SelectionMode="Single"
+                            SelectionChanged="OnPuntoSeleccionado"
+                            EmptyView="No hay puntos de reciclaje disponibles">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="8,4"
+                                BackgroundColor="White"
+                                Stroke="#E2E8F0"
+                                StrokeThickness="1"
+                                Padding="12">
+
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+
+                            <Grid ColumnDefinitions="*,Auto"
+                                  RowDefinitions="Auto,Auto,Auto"
+                                  RowSpacing="4"
+                                  ColumnSpacing="8">
+
+                                <!-- Nombre -->
+                                <Label Grid.Row="0"
+                                       Grid.Column="0"
+                                       Text="{Binding Nombre}"
+                                       FontSize="16"
+                                       TextColor="#2D3748"
+                                       FontAttributes="Bold" />
+
+                                <!-- Formato con Badge -->
+                                <Border Grid.Row="0"
+                                        Grid.Column="1"
+                                        BackgroundColor="#7F4A9B"
+                                        StrokeThickness="0"
+                                        Padding="6,2"
+                                        HorizontalOptions="End">
+
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="4"/>
+                                    </Border.StrokeShape>
+
+                                    <Label Text="{Binding Formato}"
+                                           FontSize="10"
+                                           TextColor="White"
+                                           FontAttributes="Bold" />
+                                </Border>
+
+                                <!-- Dirección y Comuna -->
+                                <Label Grid.Row="1"
+                                       Grid.Column="0"
+                                       Grid.ColumnSpan="2"
+                                       Text="{Binding Direccion}"
+                                       FontSize="12"
+                                       TextColor="#4A5568" />
+
+                                <Label Grid.Row="2"
+                                       Grid.Column="0"
+                                       Text="{Binding Comuna}"
+                                       FontSize="11"
+                                       TextColor="#718096" />
+
+                                <!-- Residuos -->
+                                <Label Grid.Row="2"
+                                       Grid.Column="1"
+                                       Text="{Binding Residuos, StringFormat='{0} residuos'}"
+                                       FontSize="11"
+                                       TextColor="#38A169"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="End" />
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Border>
+
+        <!-- Footer con Botones de Acción -->
+        <Border Grid.Row="2"
+                BackgroundColor="White"
+                Stroke="Transparent"
+                Padding="12">
+
+            <Border.Shadow>
+                <Shadow Brush="#000000"
+                        Offset="0,-2"
+                        Opacity="0.1"
+                        Radius="4"/>
+            </Border.Shadow>
+
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="12">
+
+                <Button Grid.Column="0"
+                        Text="Agregar Nuevo"
+                        Style="{StaticResource BotónVerde}" />
+
+                <Button Grid.Column="1"
+                        Text="Actualizar"
+                        Style="{StaticResource BotónMorado}" />
+
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>
