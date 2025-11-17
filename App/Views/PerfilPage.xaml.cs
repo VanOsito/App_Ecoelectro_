@@ -23,11 +23,15 @@ namespace App.Views
             CargarDatosUsuario();
         }
 
+        // --- VISIBILIDAD ADMIN ---
         private void ConfigurarVisibilidadAdmin()
         {
             btnGestionUsuarios.IsVisible = App.UsuarioActual == "admin@admin.com";
+            btnGestionDetecciones.IsVisible = App.UsuarioActual == "admin@admin.com";
+            btnGestionCompanias.IsVisible = App.UsuarioActual == "admin@admin.com";
         }
 
+        // -- USUARIO --
         private async void CargarDatosUsuario()
         {
             try
@@ -83,6 +87,8 @@ namespace App.Views
         //    }
         //}
 
+
+        // -- EVENTOS BOTONES --
         private async void VerHistorial_Clicked(object sender, EventArgs e)
         {
             if (App.UsuarioEnSesion == null)
@@ -104,6 +110,18 @@ namespace App.Views
                 Application.Current.MainPage = new NavigationPage(new LoginPage());
             }
         }
+
+        private async void gestionCompanias(object sender, EventArgs e)
+        {
+            // Reusar el _dbService que ya tienes y crear el servicio de regiones
+            await Navigation.PushAsync(new GestionCompaniasPage(_dbService, new RegionComunaService()));
+        }
+
+        private async void gestionDetecciones(object sender, EventArgs e)
+        {
+            
+            await Navigation.PushAsync(new ComponentesPage(_dbService, new BlobStorageService()));
+        }
         private string ObtenerNivelUsuario(int puntos)
         {
             if (puntos < 1000)
@@ -124,6 +142,8 @@ namespace App.Views
         }
 
 
+
+        // Cargar puntos y nivel del usuario
         private async Task CargarPuntosUsuario(int usuarioId)
         {
             try

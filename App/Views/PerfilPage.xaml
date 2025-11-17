@@ -102,6 +102,27 @@
 
             <!-- Botones -->
             <VerticalStackLayout Margin="20,10" Spacing="10">
+                <!-- Boton compañia -->
+                <Button x:Name="btnGestionCompanias"
+                    Text="Gestionar Compañías"
+                    HeightRequest="48"
+                    BackgroundColor="#7F4A9B"
+                    TextColor="White"
+                    FontSize="15"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    Clicked="gestionCompanias" />
+                <!-- Boton detecciones -->
+                <Button x:Name="btnGestionDetecciones"
+                        Text="Gestionar Detecciones"
+                        HeightRequest="48"
+                        BackgroundColor="#7F4A9B"
+                        TextColor="White"
+                        FontSize="15"
+                        FontAttributes="Bold"
+                        CornerRadius="12"
+                        Clicked="gestionDetecciones" />
+                <!-- Boton usuario -->
                 <Button x:Name="btnGestionUsuarios"
                         Text="Gestionar Usuarios"
                         BackgroundColor="#83AD6C"
@@ -110,6 +131,7 @@
                         FontAttributes="Bold"
                         HeightRequest="50"
                         Clicked="gestion" />
+                <!-- Boton cerrar sesion -->
                 <Button Text="Cerrar Sesión"
                         BackgroundColor="#7F4A9B"
                         TextColor="White"

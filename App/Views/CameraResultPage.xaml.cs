@@ -83,7 +83,7 @@ public partial class CameraResultPage : ContentPage
             var (label, prob, top3) = await _clf.PredictAsync(fs);
 
             // Frase: “en la foto hay un <label>”
-            ResultLabel.Text = $"En la foto hay un {label} ({prob:P1}).";
+            ResultLabel.Text = $"En la foto hay un {TraducirLabel(label)}.";
             PredictedLabel = label;
             PredictedConfidence = prob;
             OnPropertyChanged(nameof(PredictedLabel));
@@ -268,5 +268,26 @@ public partial class CameraResultPage : ContentPage
         }
     }
 
-    // Nota: dejo los métodos LoadCompanies... si los necesitas en otro flujo.
+    private static readonly Dictionary<string, string> LabelTraducciones = new()
+    {
+        { "battery", "bateria" },
+        { "keyboard", "teclado" },
+        { "microwave", "microondas" },
+        { "mobile", "teléfono móvil" },
+        { "mouse", "ratón" },
+        { "pcb", "placa de circuitos PCB" },
+        { "player", "reproductor de música" },
+        { "printer", "impresora" },
+        { "television", "televisor" },
+        { "washing machine", "lavadora" },
+    };
+
+    private string TraducirLabel(string label)
+    {
+        if (LabelTraducciones.TryGetValue(label?.Trim().ToLower() ?? "", out var traduccion))
+            return traduccion;
+        return label; // Si no hay traducción, muestra el original
+    }
+
+
 }

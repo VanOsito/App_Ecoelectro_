@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App.Views.CameraResultPage"
              Title="Resultado de Cámara"
-             BackgroundColor="White">
+             BackgroundColor="#DCCAE6">
 
     <Grid RowDefinitions="Auto, *" Padding="12" RowSpacing="10">
 
@@ -14,7 +14,7 @@
             <!-- Activity + resultado en una fila -->
             <HorizontalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
                 <ActivityIndicator x:Name="Busy" IsVisible="False" IsRunning="False" />
-                <Label x:Name="ResultLabel" FontSize="16" VerticalOptions="Center" />
+                <Label x:Name="ResultLabel" FontSize="16" VerticalOptions="Center" TextColor="#7F4A9B"/>
             </HorizontalStackLayout>
 
             <!-- Botón debajo, centrado -->
@@ -38,20 +38,20 @@
                         <VerticalStackLayout Spacing="8">
 
                             <!-- Datos del componente -->
-                            <Label Text="{Binding Component.Nombre}" FontAttributes="Bold" FontSize="18" />
+                            <Label Text="{Binding Component.Nombre}" FontAttributes="Bold" FontSize="18" TextColor="#7F4A9B"/>
                             <Label Text="{Binding Component.Estado}" TextColor="Gray" FontSize="14" />
-                            <Label Text="{Binding Component.Descripcion}" FontSize="13" LineBreakMode="TailTruncation" />
+                            <Label Text="{Binding Component.Descripcion}" FontSize="13" LineBreakMode="TailTruncation" TextColor="#7F4A9B"/>
 
                             <!-- Subtítulo -->
-                            <Label Text="Lugares donde puedes reciclar:" FontAttributes="Italic" Margin="0,6,0,2" />
+                            <Label Text="Lugares donde puedes reciclar:" FontAttributes="Italic" Margin="0,6,0,2" TextColor="#7F4A9B"/>
 
                             <!-- Lista de empresas (sin scroll interno) -->
                             <VerticalStackLayout BindableLayout.ItemsSource="{Binding Companies}" Spacing="6">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate>
-                                        <Frame Padding="8" HasShadow="False" BorderColor="#F0F0F0" CornerRadius="6">
+                                        <Frame Padding="8" HasShadow="False" BorderColor="#DCCAE6" CornerRadius="6">
                                             <VerticalStackLayout Spacing="4">
-                                                <Label Text="{Binding Nombre}" FontAttributes="Bold" />
+                                                <Label Text="{Binding Nombre}" FontAttributes="Bold" TextColor="#7F4A9B"/>
 
                                                 <!-- Teléfono: toca para copiar -->
                                                 <Label Text="{Binding Telefono}"

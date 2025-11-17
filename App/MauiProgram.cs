@@ -38,7 +38,9 @@ namespace App
 
             builder.Services.AddSingleton<BlobStorageService>();
 
+            builder.Services.AddTransient<GestionCompaniasPage>();
 
+            builder.Services.AddSingleton<IRegionComunaService, RegionComunaService>();
 
             return builder.Build();
 

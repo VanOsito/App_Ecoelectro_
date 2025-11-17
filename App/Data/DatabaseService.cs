@@ -1,9 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
-using App.Models;
+﻿using App.Models;
 using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+
 
 namespace App.Data
 {
@@ -15,11 +18,9 @@ namespace App.Data
         {
             try
             {
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    await connection.OpenAsync();
-                    return true;
-                }
+                using var connection = new SqlConnection(connectionString);
+                await connection.OpenAsync();
+                return true;
             }
             catch (Exception ex)
             {
@@ -116,37 +117,34 @@ namespace App.Data
 
         public async Task<List<Usuario>> ObtenerUsuarios()
         {
-            using (var connection = new SqlConnection(connectionString))
+            using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
+            var query = "SELECT * FROM Usuarios";
+            var command = new SqlCommand(query, connection);
+
+            using var reader = await command.ExecuteReaderAsync();
+            var usuarios = new List<Usuario>();
+
+            while (await reader.ReadAsync())
             {
-                await connection.OpenAsync();
-                var query = "SELECT * FROM Usuarios";
-                var command = new SqlCommand(query, connection);
-
-                var reader = await command.ExecuteReaderAsync();
-                var usuarios = new List<Usuario>();
-
-                while (await reader.ReadAsync())
+                usuarios.Add(new Usuario
                 {
-                    usuarios.Add(new Usuario
-                    {
-                        Id = (int)reader["Id"],
-                        Nombre = reader["Nombre"] != DBNull.Value ? reader["Nombre"].ToString()! : string.Empty,
-                        Correo = reader["Correo"] != DBNull.Value ? reader["Correo"].ToString()! : string.Empty,
-                        Contraseña = reader["Contraseña"] != DBNull.Value ? reader["Contraseña"].ToString()! : string.Empty,
-                        RegionUsuario = reader["RegionUsuario"] != DBNull.Value ? reader["RegionUsuario"].ToString()! : string.Empty,
-                        ComunaUsuario = reader["ComunaUsuario"] != DBNull.Value ? reader["ComunaUsuario"].ToString()! : string.Empty,
-                    });
-                }
-                return usuarios;
+                    Id = (int)reader["Id"],
+                    Nombre = reader["Nombre"] != DBNull.Value ? reader["Nombre"].ToString()! : string.Empty,
+                    Correo = reader["Correo"] != DBNull.Value ? reader["Correo"].ToString()! : string.Empty,
+                    Contraseña = reader["Contraseña"] != DBNull.Value ? reader["Contraseña"].ToString()! : string.Empty,
+                    RegionUsuario = reader["RegionUsuario"] != DBNull.Value ? reader["RegionUsuario"].ToString()! : string.Empty,
+                    ComunaUsuario = reader["ComunaUsuario"] != DBNull.Value ? reader["ComunaUsuario"].ToString()! : string.Empty,
+                });
             }
+            return usuarios;
         }
 
         public async Task<bool> ActualizarUsuario(Usuario usuario)
         {
-            using (var connection = new SqlConnection(connectionString))
-            {
-                await connection.OpenAsync();
-                var query = @"UPDATE Usuarios SET 
+            using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
+            var query = @"UPDATE Usuarios SET 
                         Nombre=@Nombre, 
                         Correo=@Correo, 
                         Contraseña=@Contraseña, 
@@ -154,29 +152,26 @@ namespace App.Data
                         ComunaUsuario=@ComunaUsuario
                       WHERE Id=@Id";
 
-                var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Id", usuario.Id);
-                command.Parameters.AddWithValue("@Nombre", usuario.Nombre);
-                command.Parameters.AddWithValue("@Correo", usuario.Correo);
-                command.Parameters.AddWithValue("@Contraseña", usuario.Contraseña);
-                command.Parameters.AddWithValue("@RegionUsuario", usuario.RegionUsuario);
-                command.Parameters.AddWithValue("@ComunaUsuario", usuario.ComunaUsuario);
+            var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Id", usuario.Id);
+            command.Parameters.AddWithValue("@Nombre", usuario.Nombre);
+            command.Parameters.AddWithValue("@Correo", usuario.Correo);
+            command.Parameters.AddWithValue("@Contraseña", usuario.Contraseña);
+            command.Parameters.AddWithValue("@RegionUsuario", usuario.RegionUsuario);
+            command.Parameters.AddWithValue("@ComunaUsuario", usuario.ComunaUsuario);
 
-                return await command.ExecuteNonQueryAsync() > 0;
-            }
+            return await command.ExecuteNonQueryAsync() > 0;
         }
 
         public async Task<bool> EliminarUsuario(int id)
         {
-            using (var connection = new SqlConnection(connectionString))
-            {
-                await connection.OpenAsync();
-                var query = "DELETE FROM Usuarios WHERE Id=@Id";
-                var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Id", id);
+            using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
+            var query = "DELETE FROM Usuarios WHERE Id=@Id";
+            var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Id", id);
 
-                return await command.ExecuteNonQueryAsync() > 0;
-            }
+            return await command.ExecuteNonQueryAsync() > 0;
         }
 
         public string ObtenerNombreUsuario(string correo, string contrasena)
@@ -336,6 +331,7 @@ ORDER BY v.prioridad, v.nombre;";
             return list;
         }
 
+        // -- COMPAÑIAS POR COMPONENTES (MULTI) --
         public async Task<List<CompanyPickup>> GetCompaniesForComponentsAsync(
             IEnumerable<int> componenteIds, string? regionNombreCompleto, string? comunaNombre = null)
         {
@@ -392,14 +388,14 @@ ORDER BY v.componente_id, v.prioridad, v.nombre;";
 
         public async Task<int?> GetDeviceIdByLabelAsync(string deviceLabel)
         {
-            await using var cn = new SqlConnection(connectionString);
+            using var cn = new SqlConnection(connectionString);
             await cn.OpenAsync();
 
             const string sql = @"SELECT dispositivo_id
                                  FROM dispositivo_catalogo
                                  WHERE nombre_dispositivo = @label";
 
-            await using var cmd = new SqlCommand(sql, cn);
+            using var cmd = new SqlCommand(sql, cn);
             cmd.Parameters.Add(new SqlParameter("@label", SqlDbType.NVarChar, 80) { Value = deviceLabel });
 
             var o = await cmd.ExecuteScalarAsync();
@@ -408,7 +404,7 @@ ORDER BY v.componente_id, v.prioridad, v.nombre;";
 
         public async Task<bool> UpdateDetectionImageUrlAsync(int detectionId, string newImageUrl)
         {
-            await using var cn = new SqlConnection(connectionString);
+            using var cn = new SqlConnection(connectionString);
             await cn.OpenAsync();
 
             const string sql = @"
@@ -416,7 +412,7 @@ ORDER BY v.componente_id, v.prioridad, v.nombre;";
                    SET image_url = @url
                  WHERE detection_id = @id;";
 
-            await using var cmd = new SqlCommand(sql, cn);
+            using var cmd = new SqlCommand(sql, cn);
             cmd.Parameters.Add(new SqlParameter("@url", SqlDbType.NVarChar, 400) { Value = newImageUrl });
             cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = detectionId });
 
@@ -431,7 +427,7 @@ ORDER BY v.componente_id, v.prioridad, v.nombre;";
             string? status,
             double? confidence)
         {
-            await using var cn = new SqlConnection(connectionString);
+            using var cn = new SqlConnection(connectionString);
             await cn.OpenAsync();
 
             const string sql = @"
@@ -441,7 +437,7 @@ ORDER BY v.componente_id, v.prioridad, v.nombre;";
         VALUES
             (@uid, @did, @url, SYSUTCDATETIME(), @status, @conf);";
 
-            await using var cmd = new SqlCommand(sql, cn);
+            using var cmd = new SqlCommand(sql, cn);
             cmd.Parameters.Add(new SqlParameter("@uid", SqlDbType.Int) { Value = userId });
             cmd.Parameters.Add(new SqlParameter("@did", SqlDbType.Int) { Value = dispositivoId });
             cmd.Parameters.Add(new SqlParameter("@url", SqlDbType.NVarChar, 400) { Value = imageUrl });
@@ -505,7 +501,7 @@ ORDER BY d.detected_at DESC;";
             return lista;
         }
 
-        // NUEVO: Recupera todas las detecciones (administrador)
+        //  Recupera todas las detecciones (administrador)
         public async Task<List<DetectionInfo>> GetAllDetectionsAsync()
         {
             var lista = new List<DetectionInfo>();
@@ -558,11 +554,11 @@ ORDER BY d.detected_at DESC;";
         {
             try
             {
-                await using var cn = new SqlConnection(connectionString);
+                using var cn = new SqlConnection(connectionString);
                 await cn.OpenAsync();
 
                 const string sql = @"DELETE FROM dbo.detections WHERE detection_id = @id;";
-                await using var cmd = new SqlCommand(sql, cn);
+                using var cmd = new SqlCommand(sql, cn);
                 cmd.Parameters.AddWithValue("@id", detectionId);
 
                 var rows = await cmd.ExecuteNonQueryAsync();
@@ -574,6 +570,43 @@ ORDER BY d.detected_at DESC;";
                 return false;
             }
         }
+
+        public async Task<List<ComponentInfo>> GetAllComponentsCatalogAsync()
+        {
+            var lista = new List<ComponentInfo>();
+
+            const string sql = @"
+SELECT componente_id, nombre_componente, descripcion_componente
+FROM componentes_catalogo
+ORDER BY nombre_componente;";
+
+            try
+            {
+                using var cn = new SqlConnection(connectionString);
+                await cn.OpenAsync();
+
+                using var cmd = new SqlCommand(sql, cn);
+                using var rd = await cmd.ExecuteReaderAsync();
+                while (await rd.ReadAsync())
+                {
+                    lista.Add(new ComponentInfo
+                    {
+                        Id = rd.GetInt32(0),
+                        Nombre = rd.IsDBNull(1) ? "" : rd.GetString(1),
+                        Descripcion = rd.IsDBNull(2) ? "" : rd.GetString(2)
+                        // Estado/GuidanceUrl quedan vacíos (si necesitas más campos, amplía la consulta)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DB] Error GetAllComponentsCatalogAsync: {ex.Message}");
+            }
+
+            return lista;
+        }
+
+
         // -------------------------------
         // SISTEMA DE PUNTOS
         // -------------------------------
@@ -804,9 +837,262 @@ ORDER BY d.detected_at DESC;";
             }
         }
 
+        // ---------- CRUD para compañías ----------
+
+        
+
+        public async Task<List<ComponentOption>> GetAllComponentsAsync()
+        {
+            var list = new List<ComponentOption>();
+            using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+
+            const string sql = @"SELECT componente_id, nombre_componente
+                         FROM dbo.componentes_catalogo
+                         WHERE active = 1
+                         ORDER BY nombre_componente;";
+
+            using var cmd = new SqlCommand(sql, cn);
+            using var rd = await cmd.ExecuteReaderAsync();
+            while (await rd.ReadAsync())
+            {
+                list.Add(new ComponentOption
+                {
+                    Id = rd.GetInt32(0),
+                    Nombre = rd.GetString(1)
+                });
+            }
+            return list;
+        }
+
+        public async Task<List<CompanyRow>> GetCompaniesBasicAsync()
+        {
+            var list = new List<CompanyRow>();
+            using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+
+            const string sql = @"
+                SELECT c.pickup_company_id,
+                       c.nombre_compania_domicilio,
+                       c.active,
+                       ISNULL(cov.cnt,0) AS coberturas,
+                       ISNULL(comp.cnt,0) AS componentes
+                FROM dbo.compania_domicilio c
+                OUTER APPLY (
+                   SELECT COUNT(*) AS cnt
+                   FROM dbo.domicilio_cobertura dc
+                   WHERE dc.pickup_company_id = c.pickup_company_id
+                ) cov
+                OUTER APPLY (
+                   SELECT COUNT(*) AS cnt
+                   FROM dbo.compania_componente_mapa m
+                   WHERE m.pickup_company_id = c.pickup_company_id
+                ) comp
+                ORDER BY c.nombre_compania_domicilio;";
+
+            using var cmd = new SqlCommand(sql, cn);
+            using var rd = await cmd.ExecuteReaderAsync();
+            while (await rd.ReadAsync())
+            {
+                list.Add(new CompanyRow
+                {
+                    PickupCompanyId = rd.GetInt32(0),
+                    Nombre = rd.GetString(1),
+                    Active = rd.GetBoolean(2),
+                    Coberturas = rd.GetInt32(3),
+                    Componentes = rd.GetInt32(4)
+                });
+            }
+            return list;
+        }
+
+        
 
 
+        public async Task<CompanyAggregate?> GetCompanyAggregateAsync(int companyId)
+        {
+            using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
 
+            // 1) Compañía
+            const string sqlCompany = @"
+        SELECT pickup_company_id, nombre_compania_domicilio, website, telefono, email, coverage_notes, active
+        FROM dbo.compania_domicilio
+        WHERE pickup_company_id = @id;";
+            using var cmdC = new SqlCommand(sqlCompany, cn);
+            cmdC.Parameters.AddWithValue("@id", companyId);
+            using var rd = await cmdC.ExecuteReaderAsync();
+            if (!await rd.ReadAsync()) return null;
+
+            var agg = new CompanyAggregate
+            {
+                PickupCompanyId = rd.GetInt32(0),
+                Nombre = rd.GetString(1),
+                Website = rd.IsDBNull(2) ? null : rd.GetString(2),
+                Telefono = rd.IsDBNull(3) ? null : rd.GetString(3),
+                Email = rd.IsDBNull(4) ? null : rd.GetString(4),
+                CoverageNotes = rd.IsDBNull(5) ? null : rd.GetString(5),
+                Active = rd.GetBoolean(6)
+            };
+            rd.Close();
+
+            // 2) Coberturas
+            const string sqlCov = @"
+        SELECT region_cobertura, comuna_cobertura
+        FROM dbo.domicilio_cobertura
+        WHERE pickup_company_id = @id
+        ORDER BY region_cobertura, comuna_cobertura;";
+            using var cmdCov = new SqlCommand(sqlCov, cn);
+            cmdCov.Parameters.AddWithValue("@id", companyId);
+            using var rd2 = await cmdCov.ExecuteReaderAsync();
+            while (await rd2.ReadAsync())
+            {
+                var reg = rd2.GetString(0);
+                var com = rd2.IsDBNull(1) ? null : rd2.GetString(1);
+                agg.Coberturas.Add((reg, com));
+            }
+            rd2.Close();
+
+            // 3) Componentes
+            const string sqlComps = @"
+        SELECT componente_id
+        FROM dbo.compania_componente_mapa
+        WHERE pickup_company_id = @id
+        ORDER BY prioridad, componente_id;";
+            using var cmdComp = new SqlCommand(sqlComps, cn);
+            cmdComp.Parameters.AddWithValue("@id", companyId);
+            using var rd3 = await cmdComp.ExecuteReaderAsync();
+            while (await rd3.ReadAsync())
+                agg.ComponentesIds.Add(rd3.GetInt32(0));
+
+            return agg;
+        }
+
+        public async Task<int> UpsertCompanyAsync(CompanyAggregate agg)
+        {
+            if (string.IsNullOrWhiteSpace(agg.Nombre))
+                throw new ArgumentException("El nombre es obligatorio.");
+
+            using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+            using var tx = cn.BeginTransaction();
+
+            try
+            {
+                int companyId;
+
+                // A) Insert/Update compania_domicilio
+                if (agg.PickupCompanyId is null)
+                {
+                    const string ins = @"
+                INSERT INTO dbo.compania_domicilio
+                    (nombre_compania_domicilio, website, telefono, email, coverage_notes, active)
+                OUTPUT INSERTED.pickup_company_id
+                VALUES (@n, @w, @t, @e, @notes, @act);";
+                    using var cmd = new SqlCommand(ins, cn, tx);
+                    cmd.Parameters.AddWithValue("@n", agg.Nombre);
+                    cmd.Parameters.AddWithValue("@w", (object?)agg.Website ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@t", (object?)agg.Telefono ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@e", (object?)agg.Email ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@notes", (object?)agg.CoverageNotes ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@act", agg.Active);
+                    companyId = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+                }
+                else
+                {
+                    const string upd = @"
+                UPDATE dbo.compania_domicilio
+                   SET nombre_compania_domicilio=@n,
+                       website=@w, telefono=@t, email=@e,
+                       coverage_notes=@notes, active=@act
+                 WHERE pickup_company_id=@id;";
+                    using var cmd = new SqlCommand(upd, cn, tx);
+                    cmd.Parameters.AddWithValue("@n", agg.Nombre);
+                    cmd.Parameters.AddWithValue("@w", (object?)agg.Website ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@t", (object?)agg.Telefono ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@e", (object?)agg.Email ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@notes", (object?)agg.CoverageNotes ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@act", agg.Active);
+                    cmd.Parameters.AddWithValue("@id", agg.PickupCompanyId!.Value);
+                    await cmd.ExecuteNonQueryAsync();
+                    companyId = agg.PickupCompanyId.Value;
+                }
+
+                // B) Reemplazar coberturas del company (limpio y vuelvo a insertar)
+                {
+                    const string del = @"DELETE FROM dbo.domicilio_cobertura WHERE pickup_company_id=@id;";
+                    using var cmdDel = new SqlCommand(del, cn, tx);
+                    cmdDel.Parameters.AddWithValue("@id", companyId);
+                    await cmdDel.ExecuteNonQueryAsync();
+
+                    const string ins = @"
+                INSERT INTO dbo.domicilio_cobertura
+                    (pickup_company_id, region_cobertura, comuna_cobertura, notes)
+                VALUES (@id, @r, @c, NULL);";
+                    foreach (var (reg, com) in agg.Coberturas.Distinct())
+                    {
+                        using var cmdIns = new SqlCommand(ins, cn, tx);
+                        cmdIns.Parameters.AddWithValue("@id", companyId);
+                        cmdIns.Parameters.AddWithValue("@r", reg);
+                        cmdIns.Parameters.AddWithValue("@c", (object?)com ?? DBNull.Value);
+                        await cmdIns.ExecuteNonQueryAsync();
+                    }
+                }
+
+                // C) Reemplazar mapping de componentes (limpio y vuelvo a insertar)
+                {
+                    const string del = @"DELETE FROM dbo.compania_componente_mapa WHERE pickup_company_id=@id;";
+                    using var cmdDel = new SqlCommand(del, cn, tx);
+                    cmdDel.Parameters.AddWithValue("@id", companyId);
+                    await cmdDel.ExecuteNonQueryAsync();
+
+                    const string ins = @"
+                INSERT INTO dbo.compania_componente_mapa
+                    (pickup_company_id, componente_id, prioridad, notas)
+                VALUES (@id, @cid, @prio, NULL);";
+                    int prio = 100;
+                    foreach (var cid in agg.ComponentesIds.Distinct())
+                    {
+                        using var cmdIns = new SqlCommand(ins, cn, tx);
+                        cmdIns.Parameters.AddWithValue("@id", companyId);
+                        cmdIns.Parameters.AddWithValue("@cid", cid);
+                        cmdIns.Parameters.AddWithValue("@prio", prio); // puedes variar prio si quieres ordenar
+                        await cmdIns.ExecuteNonQueryAsync();
+                        prio += 10;
+                    }
+                }
+
+                await tx.CommitAsync();
+                return companyId;
+            }
+            catch
+            {
+                await tx.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteCompanyAsync(int companyId)
+        {
+            using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+            const string sql = @"DELETE FROM dbo.compania_domicilio WHERE pickup_company_id=@id;";
+            using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.AddWithValue("@id", companyId);
+            var rows = await cmd.ExecuteNonQueryAsync();
+            return rows > 0;
+        }
+
+        public async Task<bool> SetCompanyActiveAsync(int companyId, bool active)
+        {
+            using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+            const string sql = @"UPDATE dbo.compania_domicilio SET active=@a WHERE pickup_company_id=@id;";
+            using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.AddWithValue("@a", active);
+            cmd.Parameters.AddWithValue("@id", companyId);
+            return await cmd.ExecuteNonQueryAsync() > 0;
+        }
     }
 }
 
