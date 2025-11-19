@@ -1,85 +1,140 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:App.Models"
-             x:Class="App.Views.ComponentesPage"
-             Title="Detecciones de usuarios"
-             BackgroundColor="#DCCAE6">
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:App.Models"
+    x:Class="App.Views.ComponentesPage"
+    BackgroundColor="#F3EDF7">
 
-    <Grid RowDefinitions="Auto,*" Padding="8" RowSpacing="8">
+    <!-- Recursos locales (PALETA + ESTILOS) -->
+    <ContentPage.Resources>
+        <!-- Colores (usar ARGB para evitar problemas) -->
+        <Color x:Key="PrimaryColor">#FF7F4A9B</Color>
+        <Color x:Key="PrimaryLightColor">#FFC993E6</Color>
+        <Color x:Key="PrimaryBackground">#FFDCCAE6</Color>
+        <Color x:Key="SuccessColor">#FF83AD6C</Color>
+        <Color x:Key="SuccessDarkColor">#FF506E40</Color>
+        <Color x:Key="WhiteColor">#FFFFFFFF</Color>
+        <Color x:Key="TextDarkColor">#FF333333</Color>
+        <Color x:Key="TextGrayColor">#FF777777</Color>
 
-        <!-- Fila 0: título + botón exportar -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8">
-            <Label Text="Detecciones de usuarios"
-             FontSize="20"
-             FontAttributes="Bold"
-             VerticalOptions="Center"
-             HorizontalOptions="Start" />
-            <Button x:Name="btnExportPdf"
-              Text="Exportar PDF"
-              Clicked="OnExportPdfClicked"
-              HeightRequest="40"
-              Grid.Column="1"
-              HorizontalOptions="End" />
+        <!-- Estilos -->
+        <Style TargetType="Label" x:Key="TitleLabel">
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+        </Style>
+
+        <Style TargetType="Button" x:Key="PrimaryButton">
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+            <Setter Property="TextColor" Value="{StaticResource WhiteColor}" />
+            <Setter Property="HeightRequest" Value="40" />
+        </Style>
+
+        <Style TargetType="Frame" x:Key="CardFrame">
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="HasShadow" Value="True" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="BackgroundColor" Value="{StaticResource WhiteColor}" />
+            <Setter Property="BorderColor" Value="{StaticResource PrimaryLightColor}" />
+            <Setter Property="Margin" Value="0,10,0,0" />
+        </Style>
+
+        <Style TargetType="Label" x:Key="PurpleSubLabel">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid Padding="16" RowDefinitions="Auto,*" RowSpacing="12">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="12" Margin="0,6,0,0">
+            <Label Text="Detecciones" Style="{StaticResource TitleLabel}" VerticalOptions="Center" />
+            <Button Text="Exportar PDF" Style="{StaticResource PrimaryButton}" Clicked="OnExportPdfClicked" />
         </Grid>
 
-        <!-- Fila 1: CollectionView ocupa el resto (scrollable) -->
-        <CollectionView x:Name="DetectionsList"
-                    Grid.Row="1"
-                    ItemsSource="{Binding Detections}"
-                    EmptyView="No hay detecciones registradas."
-                    VerticalOptions="FillAndExpand"
-                    Margin="0">
+        <!-- Lista -->
+        <CollectionView
+            x:Name="DetectionsList"
+            Grid.Row="1"
+            ItemsSource="{Binding Detections}"
+            EmptyView="No hay detecciones registradas."
+            VerticalOptions="FillAndExpand"
+            Margin="0">
+
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:DetectionWithComponents">
-                    <Frame Padding="10" Margin="0,6" CornerRadius="8" BorderColor="#E0E0E0" HasShadow="False">
-                        <VerticalStackLayout Spacing="8">
+                    <Frame Style="{StaticResource CardFrame}">
+                        <VerticalStackLayout Spacing="12">
 
-                            <Grid ColumnDefinitions="80,*,Auto" RowDefinitions="Auto">
-                                <Image Source="{Binding Detection.ImageUrl}" HeightRequest="72" WidthRequest="72" Aspect="AspectFill" Grid.Column="0" />
+                            <!-- Header: imagen + info + eliminar -->
+                            <Grid ColumnDefinitions="80,*,Auto" ColumnSpacing="12">
+                                 <!-- Info -->
+                                <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                    <Label Text="{Binding Detection.DispositivoNombre}" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" />
+                                    <Label Text="{Binding Detection.UsuarioNombre}" FontSize="13" TextColor="{StaticResource TextGrayColor}" />
+                                    <Label Text="{Binding Detection.DetectedAt, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource TextGrayColor}" />
+                                    <Label Text="{Binding Detection.Status}" FontSize="12" TextColor="{StaticResource TextGrayColor}" />
 
-                                <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                    <Label Text="{Binding Detection.DispositivoNombre}" FontAttributes="Bold" FontSize="16" TextColor="#7F4A9B" />
-                                    <Label Text="{Binding Detection.UsuarioNombre}" FontSize="12" TextColor="Gray" />
-                                    <Label Text="{Binding Detection.DetectedAt, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="Gray" />
-                                    <Label Text="{Binding Detection.Status}" FontSize="12" TextColor="Gray" />
-                                    <Label Text="{Binding Detection.Confidence, StringFormat='Confianza: {0:P1}'}" FontSize="12" TextColor="Gray"
-                         IsVisible="{Binding Detection.Confidence, Converter={StaticResource NullToBool}}" />
+                                    <!-- Confianza (solo visible si no es null) -->
+                                    <Label x:Name="LblConfidence"
+                                           Text="{Binding Detection.Confidence, StringFormat='Confianza: {0:P1}'}"
+                                           FontSize="12"
+                                           TextColor="{StaticResource SuccessDarkColor}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Detection.Confidence}" Value="{x:Null}">
+                                                <Setter Property="IsVisible" Value="False" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
                                 </VerticalStackLayout>
 
-                                <Button Text="Eliminar" Grid.Column="2"
-                        VerticalOptions="Start"
-                        CommandParameter="{Binding Detection.DetectionId}"
-                        Clicked="OnDeleteDetectionClicked" />
+                                <!-- Botón Eliminar -->
+                                <Button Grid.Column="2"
+                                        Text="Eliminar"
+                                        BackgroundColor="#FFE53935"
+                                        TextColor="White"
+                                        CornerRadius="10"
+                                        HeightRequest="36"
+                                        CommandParameter="{Binding Detection.DetectionId}"
+                                        Clicked="OnDeleteDetectionClicked"
+                                        VerticalOptions="Start" />
                             </Grid>
 
-                            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                                <Label Text="Componentes detectados:" FontAttributes="Italic" FontSize="13" VerticalOptions="Center" TextColor="#7F4A9B"/>
-                                <Button Text="Agregar componente"
-                        Clicked="OnAddComponentClicked"
-                        CommandParameter="{Binding Detection.DetectionId}"
-                        HeightRequest="34"
-                        FontSize="12"
-                        HorizontalOptions="Start" />
-                            </HorizontalStackLayout>
+                            <!-- Componentes header + acción -->
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="Componentes detectados:" Style="{StaticResource PurpleSubLabel}" VerticalOptions="Center" />
+                                <Button Grid.Column="1"
+                                        Text="Agregar componente"
+                                        Style="{StaticResource PrimaryButton}"
+                                        HeightRequest="36"
+                                        Padding="8,4"
+                                        CommandParameter="{Binding Detection.DetectionId}"
+                                        Clicked="OnAddComponentClicked" />
+                            </Grid>
 
-                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Components}" Spacing="4">
+                            <!-- Lista de componentes -->
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Components}" Spacing="8">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="models:ComponentInfo">
-                                        <Frame Padding="6" CornerRadius="6" BorderColor="#F0F0F0" HasShadow="False">
-                                            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                                                <VerticalStackLayout HorizontalOptions="StartAndExpand">
-                                                    <Label Text="{Binding Nombre}" FontAttributes="Bold" TextColor="#7F4A9B" />
-                                                    <Label Text="{Binding Estado}" TextColor="Gray" FontSize="12" />
+                                        <Frame CornerRadius="12" Padding="10" BackgroundColor="{StaticResource PrimaryBackground}" BorderColor="{StaticResource PrimaryLightColor}" HasShadow="False">
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                                <VerticalStackLayout>
+                                                    <Label Text="{Binding Nombre}" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" />
+                                                    <Label Text="{Binding Estado}" FontSize="13" TextColor="{StaticResource TextGrayColor}" />
                                                 </VerticalStackLayout>
 
-                                                <Button Text="Eliminar componente"
-                                Clicked="OnRemoveComponentClicked"
-                                BackgroundColor="#E74C3C"
-                                TextColor="White"
-                                CornerRadius="6"
-                                HeightRequest="34" />
-                                            </HorizontalStackLayout>
+                                                <Button Grid.Column="1"
+                                                        Text="Eliminar"
+                                                        BackgroundColor="#FFD32F2F"
+                                                        TextColor="White"
+                                                        CornerRadius="10"
+                                                        HeightRequest="36"
+                                                        Clicked="OnRemoveComponentClicked"
+                                                        CommandParameter="{Binding .}" />
+                                            </Grid>
                                         </Frame>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
@@ -90,6 +145,5 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
     </Grid>
 </ContentPage>

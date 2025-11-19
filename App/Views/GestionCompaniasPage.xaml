@@ -2,149 +2,276 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App.Views.GestionCompaniasPage"
-             Title="Gestión de las compañias"
+             Title=""
              BackgroundColor="#DCCAE6">
+
     <ContentPage.Resources>
+
+        <!-- LABELS -->
         <Style TargetType="Label">
             <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="#4A2A73" />
         </Style>
+
+        <!-- ENTRADAS -->
         <Style TargetType="Entry">
             <Setter Property="FontSize" Value="14" />
+            <Setter Property="BackgroundColor" Value="White" />
+            <Setter Property="TextColor" Value="#4A2A73" />
+            <Setter Property="PlaceholderColor" Value="#A084C2" />
+            <Setter Property="HeightRequest" Value="42" />
+            <Setter Property="Margin" Value="0,4" />
         </Style>
+
+        <!-- BOTONES -->
+        <Style TargetType="Button">
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="BackgroundColor" Value="#8E44AD" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="HeightRequest" Value="42" />
+        </Style>
+
+        <!-- FRAMES -->
+        <Style TargetType="Frame">
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="HasShadow" Value="True" />
+            <Setter Property="BackgroundColor" Value="White" />
+            <Setter Property="BorderColor" Value="#D8C4F0" />
+            <Setter Property="Padding" Value="10" />
+        </Style>
+
+        <!-- PICKERS -->
+        <Style TargetType="Picker">
+            <Setter Property="TextColor" Value="#4A2A73" />
+            <Setter Property="TitleColor" Value="#4A2A73" />
+            <Setter Property="BackgroundColor" Value="White" />
+        </Style>
+
+        <!-- SWITCH -->
+        <Style TargetType="Switch">
+            <Setter Property="OnColor" Value="#4A2A73" />
+            <Setter Property="ThumbColor" Value="#4A2A73" />
+        </Style>
+
+        <!-- CHECKBOX -->
+        <Style TargetType="CheckBox">
+            <Setter Property="Color" Value="#4A2A73" />
+        </Style>
+
+        <!-- COLLECTIONVIEW -->
+        <Style TargetType="CollectionView">
+            <Setter Property="BackgroundColor" Value="White" />
+        </Style>
+
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,*" Padding="12">
 
-        <!-- Barra superior -->
-        <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,8">
-            <SearchBar Grid.Column="0"
-                       Placeholder="Buscar compañía..."
-                       x:Name="SearchBox"
-                       TextChanged="OnSearchTextChanged" />
-            <Button Grid.Column="1" Text="Refrescar" Clicked="OnRefreshClicked" Margin="8,0"/>
-            <Button Grid.Column="2" Text="Nueva" Clicked="OnNewCompany" />
-        </Grid>
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
 
-        <!-- Cuerpo: lista + formulario -->
-        <Grid Grid.Row="1" ColumnDefinitions="1.2*,1.8*" ColumnSpacing="16">
+            <!-- BARRA SUPERIOR -->
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
 
-            <!-- LISTA -->
-            <CollectionView Grid.Column="0"
-                            x:Name="CompaniesList"
-                            ItemsSource="{Binding Companies}"
-                            SelectionMode="Single">
+                <SearchBar Placeholder="Buscar compañía..."
+                           x:Name="SearchBox"
+                           BackgroundColor="White"
+                           FontSize="14"
+                           TextColor="#4A2A73"
+                           PlaceholderColor="#A084C2"
+                           TextChanged="OnSearchTextChanged" />
+
+                <Button Text="Refrescar"
+                        Grid.Column="1"
+                        Clicked="OnRefreshClicked" />
+
+                <Button Text="Nueva"
+                        Grid.Column="2"
+                        Clicked="OnNewCompany" />
+            </Grid>
+
+            <Label Text="Compañías"
+                   FontSize="18"
+                   FontAttributes="Bold" />
+
+            <!-- LISTA HORIZONTAL -->
+            <CollectionView
+                x:Name="CompaniesList"
+                ItemsSource="{Binding Companies}"
+                ItemsLayout="HorizontalList"
+                SelectionMode="Single"
+                HeightRequest="150"
+                HorizontalScrollBarVisibility="Never">      
+
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Padding="10" Margin="0,6" HasShadow="False" BorderColor="#ddd">
-                            <!-- Tap garantizado en todo el frame -->
+                        <Frame Margin="6"
+                               WidthRequest="220"
+                               CornerRadius="20"
+                               HasShadow="True"
+                               BorderColor="#D8C4F0"
+                               BackgroundColor="White">
+
                             <Frame.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnCompanyTapped" NumberOfTapsRequired="1" />
+                                <TapGestureRecognizer Tapped="OnCompanyTapped" />
                             </Frame.GestureRecognizers>
 
-                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
-                                <Label Grid.Row="0" Grid.Column="0"
-                                       Text="{Binding Nombre}"
-                                       FontSize="16"
-                                       FontAttributes="Bold" TextColor="#7F4A9B"/>
-                                <Label Grid.Row="0" Grid.Column="1"
-                                       Text="{Binding ActivoLabel}"
-                                       TextColor="{Binding ActivoColor}" />
+                            <VerticalStackLayout Spacing="6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="{Binding Nombre}"
+                               FontSize="16"
+                               FontAttributes="Bold" />
 
-                                <StackLayout Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="12">
-                                    <Label Text="{Binding CoberturasResumen}" TextColor="#7F4A9B" />
-                                    <Label Text="•" TextColor="#7F4A9B"/>
-                                    <Label Text="{Binding ComponentesResumen}" TextColor="#7F4A9B"/>
-                                </StackLayout>
-                            </Grid>
+                                    <Label Text="{Binding ActivoLabel}"
+                               TextColor="{Binding ActivoColor}"
+                               Grid.Column="1" />
+                                </Grid>
+
+                                <Label Text="{Binding CoberturasResumen}"
+                           FontSize="13" />
+
+                                <Label Text="{Binding ComponentesResumen}"
+                           FontSize="13" />
+                            </VerticalStackLayout>
+
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
+
+
+
             <!-- FORMULARIO -->
-            <ScrollView Grid.Column="1">
-                <VerticalStackLayout Spacing="10">
+            <Label Text="Editar / Crear Compañía"
+                   FontSize="20"
+                   FontAttributes="Bold" />
 
-                    <Label Text="Editar / Crear compañía" FontSize="18" FontAttributes="Bold"/>
+            <Frame>
+                <Grid ColumnDefinitions="Auto,*"
+                      RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                      ColumnSpacing="10"
+                      RowSpacing="10">
 
-                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="8">
-                        <Label Grid.Row="0" Grid.Column="0" Text="Nombre*" TextColor="#7F4A9B"/>
-                        <Entry Grid.Row="0" Grid.Column="1" Text="{Binding Editing.Nombre}" Placeholder="Nombre de la compañía"/>
+                    <Label Text="Nombre*" Grid.Row="0" />
+                    <Entry Grid.Row="0" Grid.Column="1"
+                           Text="{Binding Editing.Nombre}"
+                           Placeholder="Nombre de la compañía" />
 
-                        <Label Grid.Row="1" Grid.Column="0" Text="Website" TextColor="#7F4A9B"/>
-                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding Editing.Website}" Placeholder="https://..."/>
+                    <Label Text="Website" Grid.Row="1" />
+                    <Entry Grid.Row="1" Grid.Column="1"
+                           Text="{Binding Editing.Website}"
+                           Placeholder="https://..." />
 
-                        <Label Grid.Row="2" Grid.Column="0" Text="Teléfono" TextColor="#7F4A9B"/>
-                        <Entry Grid.Row="2" Grid.Column="1" Text="{Binding Editing.Telefono}" Placeholder="+56 9 ..."/>
+                    <Label Text="Teléfono" Grid.Row="2" />
+                    <Entry Grid.Row="2" Grid.Column="1"
+                           Text="{Binding Editing.Telefono}"
+                           Placeholder="+56 9 ..." />
 
-                        <Label Grid.Row="3" Grid.Column="0" Text="Email" TextColor="#7F4A9B" />
-                        <Entry Grid.Row="3" Grid.Column="1" Text="{Binding Editing.Email}" Placeholder="contacto@empresa.cl"/>
+                    <Label Text="Email" Grid.Row="3" />
+                    <Entry Grid.Row="3" Grid.Column="1"
+                           Text="{Binding Editing.Email}"
+                           Placeholder="correo@empresa.cl" />
 
-                        <Label Grid.Row="4" Grid.Column="0" Text="Notas" TextColor="#7F4A9B"/>
-                        <Entry Grid.Row="4" Grid.Column="1" Text="{Binding Editing.CoverageNotes}" Placeholder="Notas de cobertura..."/>
+                    <Label Text="Notas" Grid.Row="4" />
+                    <Entry Grid.Row="4" Grid.Column="1"
+                           Text="{Binding Editing.CoverageNotes}"
+                           Placeholder="Notas de cobertura..." />
 
-                        <Label Grid.Row="5" Grid.Column="0" Text="Activo" TextColor="#7F4A9B"/>
-                        <Switch Grid.Row="5" Grid.Column="1" IsToggled="{Binding Editing.Active}" />
+                    <Label Text="Activo" Grid.Row="5" />
+                    <Switch Grid.Row="5" Grid.Column="1"
+                            IsToggled="{Binding Editing.Active}" />
+                </Grid>
+            </Frame>
 
-                    </Grid>
 
-                    <BoxView HeightRequest="1" Color="#e0e0e0" />
+            <!-- COBERTURAS -->
+            <Label Text="Coberturas"
+                   FontAttributes="Bold"
+                   FontSize="16" />
 
-                    <!-- COBERTURAS -->
-                    <Label Text="Coberturas" FontAttributes="Bold" TextColor="#7F4A9B"/>
-                    <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="8">
-                        <Picker x:Name="RegionPicker"
-                                Title="Región"
-                                ItemsSource="{Binding Regiones}"
-                                SelectedIndexChanged="OnRegionChanged"/>
-                        <Picker Grid.Column="1"
-                                x:Name="ComunaPicker"
-                                Title="Comuna (opcional)"/>
-                        <Button Grid.Column="2" Text="Agregar" Clicked="OnAddCoverage"/>
-                    </Grid>
+            <Frame>
+                <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="10">
 
-                    <CollectionView ItemsSource="{Binding Coberturas}" Margin="0,4,0,0">
-                        <CollectionView.Header>
-                            <Grid ColumnDefinitions="*,*" Padding="4,0">
-                                <Label Text="Región" FontAttributes="Bold"/>
-                                <Label Grid.Column="1" Text="Comuna" FontAttributes="Bold"/>
+                    <Picker x:Name="RegionPicker"
+                            Title="Región"
+                            ItemsSource="{Binding Regiones}"
+                            SelectedIndexChanged="OnRegionChanged" />
+
+                    <Picker x:Name="ComunaPicker"
+                            Grid.Column="1"
+                            Title="Comuna (opcional)" />
+
+                    <Button Grid.Column="2"
+                            Text="Agregar"
+                            Clicked="OnAddCoverage" />
+                </Grid>
+            </Frame>
+
+            <Frame>
+                <CollectionView ItemsSource="{Binding Coberturas}">
+                    <CollectionView.Header>
+                        <Grid ColumnDefinitions="*,*" Padding="4">
+                            <Label Text="Región" FontAttributes="Bold" />
+                            <Label Grid.Column="1" Text="Comuna" FontAttributes="Bold" />
+                        </Grid>
+                    </CollectionView.Header>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="*,*,Auto" Padding="4">
+                                <Label Text="{Binding Region}" />
+                                <Label Grid.Column="1" Text="{Binding Comuna}" />
+                                <Button Grid.Column="2"
+                                        Text="Quitar"
+                                        CommandParameter="{Binding .}"
+                                        Clicked="OnRemoveCoverage" />
                             </Grid>
-                        </CollectionView.Header>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid ColumnDefinitions="*,*,Auto" Padding="4">
-                                    <Label Text="{Binding Region}" />
-                                    <Label Grid.Column="1" Text="{Binding Comuna}" />
-                                    <Button Grid.Column="2" Text="Quitar" Clicked="OnRemoveCoverage" CommandParameter="{Binding .}" />
-                                </Grid>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Frame>
 
-                    <BoxView HeightRequest="1" Color="#e0e0e0" />
 
-                    <!-- COMPONENTES -->
-                    <Label Text="Componentes que atiende" FontAttributes="Bold" TextColor="#7F4A9B"/>
-                    <CollectionView ItemsSource="{Binding Componentes}" x:Name="ComponentesList">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid ColumnDefinitions="Auto,*" Padding="4,2">
-                                    <CheckBox IsChecked="{Binding IsSelected}" />
-                                    <Label Grid.Column="1" Text="{Binding Nombre}" />
-                                </Grid>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+            <!-- COMPONENTES -->
+            <Label Text="Componentes que atiende"
+                   FontAttributes="Bold"
+                   FontSize="16" />
 
-                    <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
-                        <Label />
-                        <Button Grid.Column="1" Text="Guardar" Clicked="OnSave"/>
-                        <Button Grid.Column="2" Text="Eliminar" Clicked="OnDelete" IsEnabled="{Binding CanDelete}" Margin="8,0,0,0"/>
-                    </Grid>
+            <Frame>
+                <CollectionView ItemsSource="{Binding Componentes}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="Auto,*" Padding="4">
+                                <CheckBox IsChecked="{Binding IsSelected}" />
+                                <Label Grid.Column="1" Text="{Binding Nombre}" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Frame>
 
-                    <ActivityIndicator IsRunning="{Binding Busy}" IsVisible="{Binding Busy}" />
-                </VerticalStackLayout>
-            </ScrollView>
-        </Grid>
-    </Grid>
+
+            <!-- BOTONES -->
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <Label />
+                <Button Grid.Column="1"
+                        Text="Guardar"
+                        Clicked="OnSave" />
+
+                <Button Grid.Column="2"
+                        Text="Eliminar"
+                        Margin="8,0,0,0"
+                        IsEnabled="{Binding CanDelete}"
+                        Clicked="OnDelete" />
+            </Grid>
+
+            <ActivityIndicator
+                IsRunning="{Binding Busy}"
+                IsVisible="{Binding Busy}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
 </ContentPage>
+
+

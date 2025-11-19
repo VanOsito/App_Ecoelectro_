@@ -44,23 +44,23 @@ namespace App.Views
             }
         }
 
-        private async void OnAgregarImagenClicked(object sender, EventArgs e)
-        {
-            try
-            {
-                var result = await MediaPicker.PickPhotoAsync();
-                if (result != null)
-                {
-                    imgPreview.Source = result.FullPath;
-                    imgPreview.IsVisible = true;
-                    imgPreview.BindingContext = result.FullPath;
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", $"No se pudo cargar la imagen: {ex.Message}", "OK");
-            }
-        }
+        //private async void OnAgregarImagenClicked(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        var result = await MediaPicker.PickPhotoAsync();
+        //        if (result != null)
+        //        {
+        //            imgPreview.Source = result.FullPath;
+        //            imgPreview.IsVisible = true;
+        //            imgPreview.BindingContext = result.FullPath;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await DisplayAlert("Error", $"No se pudo cargar la imagen: {ex.Message}", "OK");
+        //    }
+        //}
 
         private async void OnPublicarClicked(object sender, EventArgs e)
         {
