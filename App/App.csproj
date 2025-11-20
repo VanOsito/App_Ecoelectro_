@@ -21,7 +21,7 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display name -->
-		<ApplicationTitle>App</ApplicationTitle>
+		<ApplicationTitle>Ecoelectro</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.duocuc.ecoelectro</ApplicationId>
