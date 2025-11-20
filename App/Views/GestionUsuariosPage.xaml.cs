@@ -146,21 +146,46 @@ public partial class GestionUsuariosPage : ContentPage
 
     private async void EliminarUsuario_Clicked(object sender, EventArgs e)
     {
-        var id = (int)((Button)sender).CommandParameter;
-        bool confirmar = await DisplayAlert("Eliminar", "¿Estás seguro de eliminar este usuario?", "Sí", "No");
+        var button = (Button)sender;
 
-        if (!confirmar)
+        if (button.CommandParameter == null)
+        {
+            await DisplayAlert("Error", "No se pudo obtener el ID del usuario.", "OK");
             return;
+        }
 
-        bool eliminado = await db.EliminarUsuario(id);
+        if (!(button.CommandParameter is int id) || id <= 0)
+        {
+            await DisplayAlert("Error", "ID de usuario inválido.", "OK");
+            return;
+        }
 
-        if (eliminado)
-            await DisplayAlert("Éxito", "Usuario eliminado correctamente", "OK");
-        else
-            await DisplayAlert("Error", "No se pudo eliminar el usuario", "OK");
+        bool confirmar = await DisplayAlert("Eliminar",
+            "¿Estás seguro de eliminar este usuario?",
+            "Sí", "No");
 
-        await CargarUsuarios();
+        if (!confirmar) return;
+
+        try
+        {
+            UsuariosCollectionView.SelectedItem = null;
+
+            bool eliminado = await db.EliminarUsuario(id);
+
+            if (eliminado)
+                await DisplayAlert("Éxito", "Usuario eliminado correctamente", "OK");
+            else
+                await DisplayAlert("Error", "No se pudo eliminar el usuario.", "OK");
+
+            await CargarUsuarios();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error crítico", ex.Message, "OK");
+        }
     }
+
+
     public async Task<List<RegionChileModel>> CargarRegionesAsync()
     {
         var assembly = typeof(Registrarse).GetTypeInfo().Assembly;

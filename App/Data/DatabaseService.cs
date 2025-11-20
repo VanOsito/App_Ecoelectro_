@@ -167,12 +167,34 @@ namespace App.Data
         {
             using var connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
-            var query = "DELETE FROM Usuarios WHERE Id=@Id";
-            var command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@Id", id);
 
-            return await command.ExecuteNonQueryAsync() > 0;
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                // 1. Eliminar detections del usuario
+                var deleteDetectionsQuery = "DELETE FROM detections WHERE user_id = @Id";
+                var cmdDetections = new SqlCommand(deleteDetectionsQuery, connection, transaction);
+                cmdDetections.Parameters.AddWithValue("@Id", id);
+                await cmdDetections.ExecuteNonQueryAsync();
+
+                // 2. Eliminar usuario
+                var deleteUserQuery = "DELETE FROM Usuarios WHERE Id = @Id";
+                var cmdUser = new SqlCommand(deleteUserQuery, connection, transaction);
+                cmdUser.Parameters.AddWithValue("@Id", id);
+                int rowsAffected = await cmdUser.ExecuteNonQueryAsync();
+
+                transaction.Commit();
+
+                return rowsAffected > 0;
+            }
+            catch
+            {
+                transaction.Rollback();
+                return false;
+            }
         }
+
 
         public string ObtenerNombreUsuario(string correo, string contrasena)
         {
