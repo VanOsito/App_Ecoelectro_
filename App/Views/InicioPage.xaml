@@ -59,7 +59,7 @@
                    Margin="0,10,0,10"
                    IsVisible="False"/>
 
-            <!-- Sección para crear publicación -->
+            <!-- Sección para crear publicación (solo admin) -->
             <Frame x:Name="frmAgregar"
                    BackgroundColor="White"
                    CornerRadius="20"
