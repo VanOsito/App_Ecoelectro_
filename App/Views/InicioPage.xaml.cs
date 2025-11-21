@@ -44,23 +44,23 @@ namespace App.Views
             }
         }
 
-        private async void OnAgregarImagenClicked(object sender, EventArgs e)
-        {
-            try
-            {
-                var result = await MediaPicker.PickPhotoAsync();
-                if (result != null)
-                {
-                    imgPreview.Source = result.FullPath;
-                    imgPreview.IsVisible = true;
-                    imgPreview.BindingContext = result.FullPath;
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", $"No se pudo cargar la imagen: {ex.Message}", "OK");
-            }
-        }
+        //private async void OnAgregarImagenClicked(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        var result = await MediaPicker.PickPhotoAsync();
+        //        if (result != null)
+        //        {
+        //            imgPreview.Source = result.FullPath;
+        //            imgPreview.IsVisible = true;
+        //            imgPreview.BindingContext = result.FullPath;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await DisplayAlert("Error", $"No se pudo cargar la imagen: {ex.Message}", "OK");
+        //    }
+        //}
 
         private async void OnPublicarClicked(object sender, EventArgs e)
         {
@@ -96,8 +96,8 @@ namespace App.Views
                 var photo = await MediaPicker.CapturePhotoAsync();
                 if (photo != null)
                 {
-                    imgUltimaFoto.Source = photo.FullPath;
-                    imgUltimaFoto.IsVisible = true;
+                    var filePath = await SavePhotoAsync(photo);
+                    await GoToResultPage(filePath);
                 }
             }
             catch (Exception ex)
@@ -105,6 +105,48 @@ namespace App.Views
                 await DisplayAlert("Error", $"No se pudo tomar la foto: {ex.Message}", "OK");
             }
         }
+
+        //private async void OnPickPhotoClicked(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        var photo = await MediaPicker.PickPhotoAsync();
+        //        if (photo != null)
+        //        {
+        //            var filePath = await SavePhotoAsync(photo);
+        //            await GoToResultPage(filePath);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await DisplayAlert("Error", $"No se pudo seleccionar la foto: {ex.Message}", "OK");
+        //    }
+        //}
+
+        private async Task<string> SavePhotoAsync(FileResult photo)
+        {
+            var dir = Path.Combine(FileSystem.AppDataDirectory, "captures");
+            Directory.CreateDirectory(dir);
+            var filePath = Path.Combine(dir, $"photo_{DateTime.Now:yyyyMMdd_HHmmss}.jpg");
+
+            using var stream = await photo.OpenReadAsync();
+            using var fileStream = File.OpenWrite(filePath);
+            await stream.CopyToAsync(fileStream);
+
+            return filePath;
+        }
+
+        private async Task GoToResultPage(string filePath)
+        {
+            var uri = $"{nameof(CameraResultPage)}?photoPath={Uri.EscapeDataString(filePath)}";
+            await Shell.Current.GoToAsync(uri);
+        }
+
+        private async void OnCancel(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("..");
+        }
+
 
         private async Task EliminarContenido(ContenidoEducativo contenido)
         {

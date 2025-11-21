@@ -92,12 +92,12 @@
                             PlaceholderColor="#999"
                             HeightRequest="100"/>
 
-                    <Button Text="Agregar Imagen (opcional)"
+                    <!--<Button Text="Agregar Imagen (opcional)"
                             Clicked="OnAgregarImagenClicked"
                             BackgroundColor="#B084CC"
                             TextColor="White"
                             CornerRadius="25"
-                            HeightRequest="45"/>
+                            HeightRequest="45"/>-->
 
                     <Image x:Name="imgPreview"
                            HeightRequest="180"
@@ -142,11 +142,11 @@
                                        HorizontalOptions="Center"
                                        HorizontalTextAlignment="Center"/>
 
-                                <Image Source="{Binding ImagenUrl}"
+                                <!--<Image Source="{Binding ImagenUrl}"
                                        Aspect="AspectFill"
                                        HeightRequest="180"
                                        IsVisible="{Binding TieneImagen}"
-                                       BackgroundColor="#F2F2F2"/>
+                                       BackgroundColor="#F2F2F2"/>-->
 
                                 <Label Text="{Binding FechaPublicacion, StringFormat='Publicado el {0:dd/MM/yyyy}'}"
                                        FontSize="12"

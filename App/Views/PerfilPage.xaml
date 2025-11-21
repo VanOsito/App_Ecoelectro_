@@ -116,7 +116,7 @@
                 <Button x:Name="btnGestionDetecciones"
                         Text="Gestionar Detecciones"
                         HeightRequest="48"
-                        BackgroundColor="#7F4A9B"
+                        BackgroundColor="#83AD6C"
                         TextColor="White"
                         FontSize="15"
                         FontAttributes="Bold"
@@ -125,7 +125,7 @@
                 <!-- Boton usuario -->
                 <Button x:Name="btnGestionUsuarios"
                         Text="Gestionar Usuarios"
-                        BackgroundColor="#83AD6C"
+                        BackgroundColor="#7F4A9B"
                         TextColor="White"
                         CornerRadius="15"
                         FontAttributes="Bold"
@@ -133,7 +133,7 @@
                         Clicked="gestion" />
                 <!-- Boton cerrar sesion -->
                 <Button Text="Cerrar Sesión"
-                        BackgroundColor="#7F4A9B"
+                        BackgroundColor="#83AD6C"
                         TextColor="White"
                         CornerRadius="15"
                         FontAttributes="Bold"
