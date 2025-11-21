@@ -1,117 +1,146 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:icons="clr-namespace:Microsoft.Maui.Controls;assembly=Microsoft.Maui.Controls"
              x:Class="App.Views.PerfilPage"
              Title=""
-             BackgroundColor="#F9F9FB">
-
-    <Grid RowDefinitions="Auto,*">
-        <!-- Contenido desplazable -->
-        <ScrollView Grid.Row="0">
-            <VerticalStackLayout Padding="25,60,25,25" Spacing="20">
-
-                <!-- Sección de bienvenida -->
-                <Frame BackgroundColor="White"
-                       CornerRadius="20"
-                       Padding="25"
-                       HasShadow="True"
-                       HorizontalOptions="FillAndExpand">
-                    <VerticalStackLayout Spacing="10"
-                                         HorizontalOptions="Center"
-                                         VerticalOptions="Center">
-
+             BackgroundColor="#DCCAE6">
+    <ScrollView>
+        <VerticalStackLayout Padding="0,0,0,30" Spacing="20">
+            <!-- Header curvado -->
+            <Grid HeightRequest="220" BackgroundColor="#7F4A9B">
+                <Grid.Clip>
+                    <PathGeometry Figures="M0,0 L0,180 Q200,240 400,180 L400,0 Z"/>
+                </Grid.Clip>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                    <Frame Padding="0" WidthRequest="100" HeightRequest="100"
+                           CornerRadius="50" HasShadow="True"
+                           BackgroundColor="White" BorderColor="#C993E6">
                         <Image Source="perfil.png"
-                               HeightRequest="85"
-                               WidthRequest="85"
                                Aspect="AspectFill"
-                               HorizontalOptions="Center">
+                               HeightRequest="100"
+                               WidthRequest="100">
                             <Image.Clip>
-                                <EllipseGeometry Center="42.5,42.5" RadiusX="42.5" RadiusY="42.5" />
+                                <EllipseGeometry Center="50,50" RadiusX="50" RadiusY="50" />
                             </Image.Clip>
                         </Image>
-                        <Label x:Name="lblBienvenida"
-                               Text="Bienvenido,"
-                               FontSize="24"
-                               FontAttributes="Bold"
-                               TextColor="#333"
-                               HorizontalOptions="Center" />
-                    </VerticalStackLayout>
-                </Frame>
+                    </Frame>
 
-                <!-- Información del usuario -->
-                <Frame BackgroundColor="White"
-                       CornerRadius="20"
-                       Padding="20"
-                       HasShadow="True">
-                    <VerticalStackLayout Spacing="12">
+                    <Label x:Name="lblNombre"
+                           Text="Nombre del Usuario"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center" />
+                    <Label x:Name="lblCorreo"
+                           Text="correo@usuario.com"
+                           FontSize="13"
+                           TextColor="#E8DFF5"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Grid>
 
-                        <HorizontalStackLayout>
-                            <Label Text="👤" FontSize="16" />
-                            <Label x:Name="lblNombre"
-                                   Text="Nombre de usuario"
-                                   FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="#333" />
-                        </HorizontalStackLayout>
+            <!-- Puntos acumulados -->
+            <Frame CornerRadius="20"
+                   BackgroundColor="White"
+                   Margin="20,10"
+                   HasShadow="True"
+                   Padding="25">
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="10">
+                    <Label Text="⭐ Puntos acumulados"
+                           TextColor="#7F4A9B"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center" />
+                    <Label x:Name="lblPuntos"
+                           Text="500"
+                           FontSize="40"
+                           FontAttributes="Bold"
+                           TextColor="#83AD6C"
+                           HorizontalOptions="Center" />
+                    <Label x:Name="lblNivel"
+                           Text="Nivel: Bronce"
+                           FontSize="16"
+                           TextColor="#7F4A9B"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center" />
+                    <Image x:Name="imgMascota"
+                           HeightRequest="100"
+                           WidthRequest="100"
+                           Aspect="AspectFit"
+                           HorizontalOptions="Center"
+                           Margin="0,5,0,0"/>
+                    <Button Text="Ver historial de puntos"
+                            TextColor="White"
+                            BackgroundColor="#7F4A9B"
+                            CornerRadius="15"
+                            WidthRequest="220"
+                            Clicked="VerHistorial_Clicked" />
+                </VerticalStackLayout>
+            </Frame>
 
-                        <HorizontalStackLayout>
-                            <Label Text="📧" FontSize="16" />
-                            <Label x:Name="lblCorreo"
-                                   Text="Correo usuario"
-                                   FontSize="15"
-                                   TextColor="#555"
-                                   LineBreakMode="WordWrap" />
-                        </HorizontalStackLayout>
+            <!-- Información del usuario -->
+            <Frame CornerRadius="20"
+                   BackgroundColor="White"
+                   Margin="20,0"
+                   HasShadow="True"
+                   Padding="20">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Información personal"
+                           FontSize="17"
+                           FontAttributes="Bold"
+                           TextColor="#7F4A9B" />
+                    <Label x:Name="lblRegion"
+                           Text="Región: Región Metropolitana de Santiago"
+                           FontSize="14"
+                           TextColor="#333" />
+                    <Label x:Name="lblComuna"
+                           Text="Comuna: Santiago"
+                           FontSize="14"
+                           TextColor="#333" />
+                </VerticalStackLayout>
+            </Frame>
 
-                        <HorizontalStackLayout>
-                            <Label Text="📍" FontSize="16" />
-                            <Label x:Name="lblRegion"
-                                   Text="Región de usuario"
-                                   FontSize="15"
-                                   TextColor="#555"
-                                   LineBreakMode="WordWrap" />
-                        </HorizontalStackLayout>
-
-                        <HorizontalStackLayout>
-                            <Label Text="🏠" FontSize="16" />
-                            <Label x:Name="lblComuna"
-                                   Text="Comuna de usuario"
-                                   FontSize="15"
-                                   TextColor="#555"
-                                   LineBreakMode="WordWrap" />
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </Frame>
-
-            </VerticalStackLayout>
-        </ScrollView>
-
-        <!-- Botones al final -->
-        <VerticalStackLayout Grid.Row="1"
-                             Padding="25,15"
-                             Spacing="12"
-                             VerticalOptions="End"
-                             BackgroundColor="#F9F9FB">
-
-            <Button x:Name="btnGestionUsuarios"
-                    Text="Gestionar Usuarios"
+            <!-- Botones -->
+            <VerticalStackLayout Margin="20,10" Spacing="10">
+                <!-- Boton compañia -->
+                <Button x:Name="btnGestionCompanias"
+                    Text="Gestionar Compañías"
                     HeightRequest="48"
                     BackgroundColor="#7F4A9B"
                     TextColor="White"
                     FontSize="15"
                     FontAttributes="Bold"
                     CornerRadius="12"
-                    Clicked="gestion" />
+                    Clicked="gestionCompanias" />
+                <!-- Boton detecciones -->
+                <Button x:Name="btnGestionDetecciones"
+                        Text="Gestionar Detecciones"
+                        HeightRequest="48"
+                        BackgroundColor="#83AD6C"
+                        TextColor="White"
+                        FontSize="15"
+                        FontAttributes="Bold"
+                        CornerRadius="12"
+                        Clicked="gestionDetecciones" />
+                <!-- Boton usuario -->
+                <Button x:Name="btnGestionUsuarios"
+                        Text="Gestionar Usuarios"
+                        BackgroundColor="#7F4A9B"
+                        TextColor="White"
+                        CornerRadius="15"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        Clicked="gestion" />
+                <!-- Boton cerrar sesion -->
+                <Button Text="Cerrar Sesión"
+                        BackgroundColor="#83AD6C"
+                        TextColor="White"
+                        CornerRadius="15"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        Clicked="cerrar" />
+            </VerticalStackLayout>
 
-            <Button Text="Cerrar Sesión"
-                    HeightRequest="48"
-                    BackgroundColor="#DCCAE6"
-                    TextColor="White"
-                    FontSize="15"
-                    FontAttributes="Bold"
-                    CornerRadius="12"
-                    Clicked="cerrar" />
         </VerticalStackLayout>
-    </Grid>
+    </ScrollView>
 </ContentPage>

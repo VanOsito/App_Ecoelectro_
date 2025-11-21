@@ -15,6 +15,7 @@ namespace App
             Routing.RegisterRoute("InicioPage", typeof(InicioPage));
             Routing.RegisterRoute("Registrarse", typeof(Registrarse));
             Routing.RegisterRoute("GestionUsuariosPage", typeof(GestionUsuariosPage));
+            Routing.RegisterRoute("HistorialPuntos", typeof(HistorialPuntos));
 
             Routing.RegisterRoute(nameof(CameraPage), typeof(CameraPage));
             Routing.RegisterRoute(nameof(CameraResultPage), typeof(CameraResultPage));

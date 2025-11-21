@@ -3,17 +3,172 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App.Views.InicioPage"
              Title=""
-             BackgroundColor="#F5F5F5">
-    <VerticalStackLayout>
-        <Label Text="Hola!" FontSize="24" HorizontalOptions="Center" />
-        <Label Text="Cámara" FontSize="24" HorizontalOptions="Center" />
+             BackgroundColor="#F3EDF7">
 
-        <Button Text="Tomar foto" Clicked="OnTakePhoto" HeightRequest="48"/>
+    <ScrollView>
+        <VerticalStackLayout Padding="25,20" Spacing="20">
 
-        <Image x:Name="LastPhoto"
-       HeightRequest="220"
-       Aspect="AspectFill"
-       BackgroundColor="#EEE" />
+            <!-- Encabezado principal -->
+            <Frame BackgroundColor="#7F4A9B"
+                   CornerRadius="25"
+                   Padding="20"
+                   HasShadow="True"
+                   Margin="0,0,0,10">
+                <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
 
-    </VerticalStackLayout>
+                    <!-- Bienvenida + nombre -->
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
+                        <Label Text="Bienvenido,"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               VerticalOptions="Center"/>
+
+                        <Label x:Name="lblNombreUsuario"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="#FFE4FF"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+
+                    <Label Text="Explora las publicaciones educativas y aprende algo nuevo cada día."
+                           FontSize="14"
+                           TextColor="#F3E5F5"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
+                           Margin="10,0,10,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Botón para tomar foto -->
+            <Button x:Name="btnCamara"
+                    Text="Tomar Foto"
+                    Clicked="OnTakePhotoClicked"
+                    BackgroundColor="#9C27B0"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="25"
+                    HeightRequest="48"
+                    Margin="0,0,0,5"/>
+
+            <!-- Última foto -->
+            <Image x:Name="imgUltimaFoto"
+                   HeightRequest="220"
+                   Aspect="AspectFill"
+                   BackgroundColor="#E8DFF0"
+                   Margin="0,10,0,10"
+                   IsVisible="False"/>
+
+            <!-- Sección para crear publicación (solo admin) -->
+            <Frame x:Name="frmAgregar"
+                   BackgroundColor="White"
+                   CornerRadius="20"
+                   Padding="20"
+                   HasShadow="True"
+                   BorderColor="#CBA6E3"
+                   IsVisible="False"
+                   Margin="0,0,0,15">
+
+                <VerticalStackLayout Spacing="12">
+
+                    <Label Text="Crear publicación educativa"
+                           FontAttributes="Bold"
+                           FontSize="18"
+                           TextColor="#6A1B9A"
+                           HorizontalOptions="Center"/>
+
+                    <Entry x:Name="txtTitulo"
+                           Placeholder="Título..."
+                           BackgroundColor="#F2F2F2"
+                           TextColor="Black"
+                           PlaceholderColor="#999"
+                           HeightRequest="42"/>
+
+                    <Editor x:Name="txtDescripcion"
+                            Placeholder="Escribe algo educativo..."
+                            AutoSize="TextChanges"
+                            BackgroundColor="#F2F2F2"
+                            TextColor="Black"
+                            PlaceholderColor="#999"
+                            HeightRequest="100"/>
+
+                    <!--<Button Text="Agregar Imagen (opcional)"
+                            Clicked="OnAgregarImagenClicked"
+                            BackgroundColor="#B084CC"
+                            TextColor="White"
+                            CornerRadius="25"
+                            HeightRequest="45"/>-->
+
+                    <Image x:Name="imgPreview"
+                           HeightRequest="180"
+                           Aspect="AspectFill"
+                           IsVisible="False"
+                           BackgroundColor="#EEE"
+                           Margin="0,5,0,5"/>
+
+                    <Button Text="Publicar"
+                            Clicked="OnPublicarClicked"
+                            BackgroundColor="#6A1B9A"
+                            TextColor="White"
+                            CornerRadius="25"
+                            HeightRequest="45"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Lista de publicaciones -->
+            <CollectionView x:Name="contenidoList"
+                            Margin="0,10,0,30"
+                            SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BackgroundColor="White"
+                               CornerRadius="20"
+                               Padding="15"
+                               Margin="0,8,0,0"
+                               HasShadow="True"
+                               BorderColor="#CBA6E3">
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding Titulo}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="#6A1B9A"
+                                       HorizontalOptions="Center"
+                                       HorizontalTextAlignment="Center"/>
+
+                                <Label Text="{Binding Descripcion}"
+                                       FontSize="14"
+                                       TextColor="Black"
+                                       HorizontalOptions="Center"
+                                       HorizontalTextAlignment="Center"/>
+
+                                <!--<Image Source="{Binding ImagenUrl}"
+                                       Aspect="AspectFill"
+                                       HeightRequest="180"
+                                       IsVisible="{Binding TieneImagen}"
+                                       BackgroundColor="#F2F2F2"/>-->
+
+                                <Label Text="{Binding FechaPublicacion, StringFormat='Publicado el {0:dd/MM/yyyy}'}"
+                                       FontSize="12"
+                                       TextColor="#777"
+                                       HorizontalOptions="End"/>
+
+                                <!-- Botón eliminar solo visible para admin -->
+                                <Button Text="Eliminar publicación"
+                                        BackgroundColor="#E57373"
+                                        TextColor="White"
+                                        CornerRadius="20"
+                                        HeightRequest="40"
+                                        Command="{Binding Source={x:Reference contenidoList}, Path=BindingContext.EliminarCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={x:Reference contenidoList}, Path=BindingContext.EsAdmin}"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
+

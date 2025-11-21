@@ -26,7 +26,7 @@ public partial class Registrarse : ContentPage
     {
         var assembly = typeof(Registrarse).GetTypeInfo().Assembly;
 
-        
+
         foreach (var res in assembly.GetManifestResourceNames())
         {
             Console.WriteLine(res);
@@ -60,7 +60,7 @@ public partial class Registrarse : ContentPage
             pickerComuna.ItemsSource = regionSeleccionada.Comunas;
             pickerComuna.ItemDisplayBinding = new Binding("NombreComuna");
         }
-        
+
     }
 
     private async void CargarDatosAsync()
@@ -78,7 +78,6 @@ public partial class Registrarse : ContentPage
     {
         var db = new DatabaseService();
 
-
         if (!chkTerminos.IsChecked)
         {
             await DisplayAlert("Aviso", "Debes aceptar los Términos y Condiciones para continuar.", "OK");
@@ -90,6 +89,7 @@ public partial class Registrarse : ContentPage
             await DisplayAlert("Error", "Por favor ingresa un correo electrónico válido.", "OK");
             return;
         }
+
         if (string.IsNullOrWhiteSpace(NombreEntry.Text) ||
             string.IsNullOrWhiteSpace(ContraseñaEntry.Text) ||
             pickerRegion.SelectedItem == null ||
@@ -99,11 +99,9 @@ public partial class Registrarse : ContentPage
             return;
         }
 
-
         var regionSeleccionada = pickerRegion.SelectedItem as RegionChileModel;
         var comunaSeleccionada = pickerComuna.SelectedItem as Comunas;
 
-        
         var usuario = new Usuario
         {
             Nombre = NombreEntry.Text ?? string.Empty,
@@ -113,16 +111,20 @@ public partial class Registrarse : ContentPage
             ComunaUsuario = comunaSeleccionada?.NombreComuna ?? string.Empty
         };
 
-        bool exito = _dbService.RegistrarUsuario(usuario);
+        bool exito = db.RegistrarUsuario(usuario);
 
         if (exito)
         {
-            await DisplayAlert("Éxito", "Usuario registrado correctamente", "OK");
+
+            await DisplayAlert("¡Bienvenido!",
+                "Tu cuenta se ha creado correctamente.\nHas recibido 100 puntos de bienvenida 🎉",
+                "Aceptar");
+
             await Navigation.PushAsync(new LoginPage());
         }
         else
         {
-            await DisplayAlert("Error", "No se pudo registrar el usuario", "OK");
+            await DisplayAlert("Error", "No se pudo registrar el usuario. Intenta nuevamente.", "OK");
         }
     }
     private bool IsValidEmail(string email)

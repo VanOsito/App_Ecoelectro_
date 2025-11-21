@@ -3,182 +3,209 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App.Views.GestionUsuariosPage"
              Title=""
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="#DCCAE6">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="25">
-
-            <!-- BOTÓN PRINCIPAL -->
+        <VerticalStackLayout Padding="20,40" Spacing="25">
+            <!-- BOTÓN AGREGAR USUARIO -->
             <Button x:Name="BtnAgregarUsuario"
                     Text="Agregar Usuario"
                     BackgroundColor="#7F4A9B"
                     TextColor="White"
-                    CornerRadius="12"
+                    CornerRadius="15"
                     FontAttributes="Bold"
-                    HeightRequest="48"
+                    HeightRequest="50"
                     Clicked="OnMostrarFormularioClicked" />
 
-            <!-- FORMULARIO -->
+            <!-- FORMULARIO DE REGISTRO -->
             <Frame x:Name="FormularioFrame"
                    IsVisible="False"
                    BackgroundColor="White"
                    CornerRadius="20"
                    HasShadow="True"
                    Padding="25"
-                   BorderColor="#E0E0E0"
-                   Margin="0,0,0,10">
+                   BorderColor="#C993E6">
 
                 <VerticalStackLayout Spacing="16">
 
-                    <Label Text="Agregar Nuevo Usuario"
+                    <Label Text="Nuevo Usuario"
                            FontAttributes="Bold"
                            FontSize="20"
-                           TextColor="#5B2C6F"
+                           TextColor="#7F4A9B"
                            HorizontalOptions="Center"/>
 
-                    <!-- Nombre -->
-                    <VerticalStackLayout>
-                        <Label Text="Nombre completo"
-                               FontSize="13"
-                               TextColor="#666"/>
-                        <Entry x:Name="NombreEntry"
-                               Placeholder="Ej: Juan Pérez"
-                               BackgroundColor="#F2F2F2"
-                               HeightRequest="42"
-                               TextColor="Black"
-                               />
-                    </VerticalStackLayout>
+                    <BoxView HeightRequest="1" Color="#E0E0E0" />
 
-                    <!-- Correo -->
-                    <VerticalStackLayout>
-                        <Label Text="Correo electrónico"
-                               FontSize="13"
-                               TextColor="#666"/>
-                        <Entry x:Name="CorreoEntry"
-                               Placeholder="email@ejemplo.com"
-                               Keyboard="Email"
-                               BackgroundColor="#F2F2F2"
-                               HeightRequest="42"
-                               TextColor="Black"
-                               />
-                    </VerticalStackLayout>
+                    <!-- Campos -->
+                    <Entry x:Name="NombreEntry"
+                           Placeholder="Nombre completo"
+                           BackgroundColor="#F3EDF7"
+                           HeightRequest="42"
+                           TextColor="#333"
+                           PlaceholderColor="#999"/>
 
-                    <!-- Contraseña -->
-                    <VerticalStackLayout>
-                        <Label Text="Contraseña"
-                               FontSize="13"
-                               TextColor="#666"/>
-                        <Entry x:Name="ContraseñaEntry"
-                               Placeholder="Introduce tu contraseña"
-                               IsPassword="True"
-                               BackgroundColor="#F2F2F2"
-                               HeightRequest="42"
-                               TextColor="Black"/>
-                    </VerticalStackLayout>
+                    <Entry x:Name="CorreoEntry"
+                           Placeholder="Correo electrónico"
+                           Keyboard="Email"
+                           BackgroundColor="#F3EDF7"
+                           HeightRequest="42"
+                           TextColor="#333"
+                           PlaceholderColor="#999"/>
 
-                    <!-- Región -->
-                    <VerticalStackLayout>
-                        <Label Text="Región"
-                               FontSize="13"
-                               TextColor="#666"/>
-                        <Picker 
-                                x:Name="pickerRegion"
-                                ItemsSource="{Binding ListaRegiones}"
-                                ItemDisplayBinding="{Binding Nombre}"
-                                Title="Selecciona una Región" 
-                                BackgroundColor="#F5F5F5"
-                                TextColor="Black"
-                                SelectedIndexChanged="pickerRegion_SelectedIndexChanged"/>
-                    </VerticalStackLayout>
+                    <Entry x:Name="ContraseñaEntry"
+                           Placeholder="Contraseña"
+                           IsPassword="True"
+                           BackgroundColor="#F3EDF7"
+                           HeightRequest="42"
+                           TextColor="#333"
+                           PlaceholderColor="#999"/>
 
-                    <!-- Comuna -->
-                    <VerticalStackLayout>
-                        <Label Text="Comuna"
-                               FontSize="14"
-                               TextColor="#333"/>
-                        <Picker x:Name="pickerComuna" Title="Selecciona Comuna"
-                                BackgroundColor="#F5F5F5"
-                                TextColor="Black"/>
-                    </VerticalStackLayout>
+                    <Picker x:Name="pickerRegion"
+                            Title="Selecciona una Región"
+                            BackgroundColor="#F3EDF7"
+                            TextColor="#333"
+                            SelectedIndexChanged="pickerRegion_SelectedIndexChanged"/>
+
+                    <Picker x:Name="pickerComuna"
+                            Title="Selecciona una Comuna"
+                            BackgroundColor="#F3EDF7"
+                            TextColor="#333"/>
 
                     <!-- Botón Guardar -->
                     <Button Text="Guardar Usuario"
-                            BackgroundColor="#7F4A9B"
+                            BackgroundColor="#83AD6C"
                             TextColor="White"
-                            CornerRadius="12"
+                            CornerRadius="15"
                             FontAttributes="Bold"
-                            HeightRequest="48"
+                            HeightRequest="50"
                             Clicked="Registrarse_Clicked"/>
-
                 </VerticalStackLayout>
             </Frame>
 
-            <!-- Listado de usuarios -->
-            <CollectionView x:Name="UsuariosCollectionView" SelectionMode="None" Margin="0,20,0,0">
+            <!-- FORMULARIO DE EDICIÓN -->
+            <Frame x:Name="formularioFrame"
+                   IsVisible="False"
+                   BackgroundColor="White"
+                   CornerRadius="20"
+                   HasShadow="True"
+                   Padding="25"
+                   BorderColor="#C993E6">
+
+                <VerticalStackLayout Spacing="16">
+
+                    <Label Text="Editar Usuario"
+                           FontAttributes="Bold"
+                           FontSize="20"
+                           TextColor="#7F4A9B"
+                           HorizontalOptions="Center"/>
+
+                    <BoxView HeightRequest="1" Color="#E0E0E0" />
+
+                    <Entry x:Name="nombreEntry"
+                           Placeholder="Nombre"
+                           BackgroundColor="#F3EDF7"
+                           HeightRequest="42"
+                           TextColor="#333"
+                           PlaceholderColor="#999"/>
+
+                    <Entry x:Name="correoEntry"
+                           Placeholder="Correo"
+                           BackgroundColor="#F3EDF7"
+                           HeightRequest="42"
+                           TextColor="#333"
+                           PlaceholderColor="#999"/>
+
+                    <Picker x:Name="regionPicker"
+                            Title="Selecciona una Región"
+                            BackgroundColor="#F3EDF7"
+                            TextColor="#333"
+                            SelectedIndexChanged="OnRegionChanged"/>
+
+                    <Picker x:Name="comunaPicker"
+                            Title="Selecciona una Comuna"
+                            BackgroundColor="#F3EDF7"
+                            TextColor="#333"/>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <Button x:Name="guardarBtn"
+                                Text="Guardar Cambios"
+                                BackgroundColor="#83AD6C"
+                                TextColor="White"
+                                CornerRadius="15"
+                                FontAttributes="Bold"
+                                HeightRequest="48"
+                                HorizontalOptions="FillAndExpand"
+                                Clicked="OnGuardarClicked"/>
+
+                        <Button Text="Cancelar"
+                                BackgroundColor="#C993E6"
+                                TextColor="White"
+                                CornerRadius="15"
+                                FontAttributes="Bold"
+                                HeightRequest="48"
+                                HorizontalOptions="FillAndExpand"
+                                Clicked="OnCancelarClicked"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- LISTA DE USUARIOS -->
+            <Label Text="Usuarios registrados"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="#7F4A9B"
+                   Margin="5,10,0,0"/>
+
+            <CollectionView x:Name="UsuariosCollectionView" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Margin="5" Padding="10" BorderColor="Gray">
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Nombre}" FontAttributes="Bold" />
-                                <Label Text="{Binding Correo}" />
-                                <Label Text="{Binding RegionUsuario}" FontAttributes="Italic"/>
-                                <Label Text="{Binding ComunaUsuario}" FontAttributes="Italic"/>
+                        <Frame Margin="5,8" Padding="15"
+                               BackgroundColor="White"
+                               CornerRadius="18"
+                               HasShadow="True"
+                               BorderColor="#E0E0E0">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Nombre}"
+                                       FontAttributes="Bold"
+                                       FontSize="16"
+                                       TextColor="#333"/>
+                                <Label Text="{Binding Correo}"
+                                       FontSize="13"
+                                       TextColor="#666"/>
+                                <Label Text="{Binding RegionUsuario}" 
+                                       FontSize="12"
+                                       TextColor="#888"/>
+                                <Label Text="{Binding ComunaUsuario}"
+                                       FontSize="12"
+                                       TextColor="#888"/>
 
-                                <Button Text="Editar" 
-                                        Clicked="OnEditarClicked"
-                                        BackgroundColor="#C993E6"
-                                        TextColor="White"
-                                        CommandParameter="{Binding}" />
-                                <Label></Label>
+                                <HorizontalStackLayout Spacing="10" Margin="0,8,0,0">
+                                    <Button Text="Editar"
+                                            Clicked="OnEditarClicked"
+                                            BackgroundColor="#C993E6"
+                                            TextColor="White"
+                                            FontAttributes="Bold"
+                                            CornerRadius="10"
+                                            HeightRequest="38"
+                                            CommandParameter="{Binding}"
+                                            HorizontalOptions="FillAndExpand"/>
 
-                                <Button Text="Eliminar"
-                                        BackgroundColor="#DCCAE6"
-                                        TextColor="White"
-                                        CommandParameter="{Binding Id}"
-                                        Clicked="EliminarUsuario_Clicked"/>
+                                    <Button Text="Eliminar"
+                                            Clicked="EliminarUsuario_Clicked"
+                                            BackgroundColor="#7F4A9B"
+                                            TextColor="White"
+                                            FontAttributes="Bold"
+                                            CornerRadius="10"
+                                            HeightRequest="38"
+                                            CommandParameter="{Binding Id}"
+                                            HorizontalOptions="FillAndExpand"/>
+
+                                </HorizontalStackLayout>
                             </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
-            <!-- Formulario de edición -->
-            <Frame x:Name="formularioFrame"
-                   IsVisible="False"
-                   BorderColor="DarkGray"
-                   Padding="15"
-                   Margin="10">
-                <VerticalStackLayout Spacing="10">
-
-                    <Label Text="Editar Usuario" FontAttributes="Bold" FontSize="18"/>
-
-                    <Entry x:Name="nombreEntry" Placeholder="Nombre"/>
-                    <Entry x:Name="correoEntry" Placeholder="Correo"/>
-
-                    <Label>Región</Label>
-                    <!-- Picker para Región -->
-                    <Picker x:Name="regionPicker"
-                            Title="Selecciona una Región"
-                            SelectedIndexChanged="OnRegionChanged"/>
-                    
-                    <Label>Comuna</Label>
-                    <!-- Picker para Comuna -->
-                    <Picker x:Name="comunaPicker"
-                            Title="Selecciona una Comuna"/>
-
-                    <Button x:Name="guardarBtn"
-                            Text="Guardar Cambios"
-                            BackgroundColor="#CB6DE6"
-                            TextColor="White"
-                            Clicked="OnGuardarClicked"/>
-
-                    <Button Text="Cancelar" 
-                            Clicked="OnCancelarClicked"
-                            BackgroundColor="#83AD6C"
-                            TextColor="White"/>
-
-                </VerticalStackLayout>
-            </Frame>
 
         </VerticalStackLayout>
     </ScrollView>
